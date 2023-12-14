@@ -63,6 +63,25 @@ namespace winrt::ImageSorter::implementation
     }
   }
 
+  void MainWindow::RadioButtons_SelectionChanged(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Controls::SelectionChangedEventArgs const& e)
+  {
+
+  }
+
+  void MainWindow::OnElementClicked(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e)
+  {
+    auto b{ sender.as<Windows::UI::Xaml::Controls::Button>() };
+    std::string name = winrt::to_string(b.Name());
+    // More logic to do here.
+    if (name == "t1") {
+      // show dialog
+    }
+    if (name == "t4") {
+      // exit
+      this->Close();
+    }
+  }
+
   fire_and_forget MainWindow::ShowImage(ListViewBase const& sender, ContainerContentChangingEventArgs const& args)
   {
     if (args.Phase() == 1)
