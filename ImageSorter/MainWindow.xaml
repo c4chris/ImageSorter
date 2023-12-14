@@ -8,22 +8,31 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <StackPanel>
-        <MenuBar x:Name="Example2">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock TextWrapping="Wrap" Margin="0,0,0,12">
+                    Classify the images in Empty, Good and Mixed - this will change the files names accordingly
+        </TextBlock>
+        <MenuBar x:Name="myMenuBar" Grid.Row="1">
             <MenuBarItem Title="File">
-                <MenuFlyoutItem x:Name ="t1" Text="Open" Click="OnElementClicked">
+                <MenuFlyoutItem x:Name ="t1" Text="Open" Click="OpenClicked">
                     <MenuFlyoutItem.KeyboardAccelerators>
                         <KeyboardAccelerator Modifiers="Control" Key="O"/>
                     </MenuFlyoutItem.KeyboardAccelerators>
                 </MenuFlyoutItem>
-                <MenuFlyoutItem x:Name ="t4" Text="Exit" Click="OnElementClicked">
+                <MenuFlyoutItem x:Name ="t4" Text="Exit" Click="ExitClicked">
                     <MenuFlyoutItem.KeyboardAccelerators>
                         <KeyboardAccelerator Modifiers="Control" Key="E"/>
                     </MenuFlyoutItem.KeyboardAccelerators>
                 </MenuFlyoutItem>
             </MenuBarItem>
         </MenuBar>
-        <Grid>
+        <Grid Grid.Row="2">
             <Grid.Resources>
                 <DataTemplate x:Key="ImageGridView_ItemTemplate"
                           x:DataType="local:ImageFileInfo">
@@ -84,5 +93,5 @@
                     ContainerContentChanging="ImageGridView_ContainerContentChanging">
             </GridView>
         </Grid>
-    </StackPanel>
+    </Grid>
 </Window>
