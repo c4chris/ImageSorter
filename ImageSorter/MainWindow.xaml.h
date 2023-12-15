@@ -36,6 +36,7 @@ namespace winrt::ImageSorter::implementation
     fire_and_forget ShowImage(
       Microsoft::UI::Xaml::Controls::ListViewBase const& sender,
       Microsoft::UI::Xaml::Controls::ContainerContentChangingEventArgs const& args);
+    fire_and_forget ShowFolderPickerAsync(HWND hWnd);
   public:
       void RadioButtons_SelectionChanged(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Controls::SelectionChangedEventArgs const& e);
       void OpenClicked(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);

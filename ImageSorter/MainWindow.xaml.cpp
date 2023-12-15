@@ -71,6 +71,11 @@ namespace winrt::ImageSorter::implementation
   void MainWindow::OpenClicked(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e)
   {
     // show dialog
+    // Retrieve the window handle (HWND) of the current WinUI 3 window.
+    auto windowNative{ this->m_inner.as<::IWindowNative>() };
+    HWND hWnd{ 0 };
+    windowNative->get_WindowHandle(&hWnd);
+    ShowFolderPickerAsync(hWnd);
   }
 
   void MainWindow::ExitClicked(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e)
@@ -86,7 +91,31 @@ namespace winrt::ImageSorter::implementation
       auto templateRoot = args.ItemContainer().ContentTemplateRoot().try_as<Grid>();
       auto image = templateRoot.FindName(L"ItemImage").try_as<Image>();
       auto item = args.Item().try_as<ImageSorter::ImageFileInfo>();
-      image.Source(co_await get_self<ImageSorter::implementation::ImageFileInfo>(item)->GetImageThumbnailAsync());
+      image.Source(co_await get_self<ImageSorter::implementation::ImageFileInfo>(item)->GetImageSourceAsync());
     }
+  }
+
+  fire_and_forget MainWindow::ShowFolderPickerAsync(HWND hWnd)
+  {
+    // Create a folder picker.
+    Windows::Storage::Pickers::FolderPicker folderPicker;
+
+    // Initialize the folder picker with the window handle (HWND).
+    auto initializeWithWindow{ folderPicker.as<::IInitializeWithWindow>() };
+    initializeWithWindow->Initialize(hWnd);
+
+    // Use the folder picker as usual.
+    folderPicker.FileTypeFilter().Append(L"*");
+    auto picturesFolder{ co_await folderPicker.PickSingleFolderAsync() };
+    auto result = picturesFolder.CreateFileQueryWithOptions(QueryOptions());
+
+    Images().Clear();
+    IVectorView<StorageFile> imageFiles = co_await result.GetFilesAsync();
+    for (auto&& file : imageFiles)
+    {
+      Images().Append(co_await LoadImageInfoAsync(file));
+    }
+
+    ImageGridView().ItemsSource(Images());
   }
 }

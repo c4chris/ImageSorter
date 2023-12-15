@@ -28,3 +28,7 @@
 #include <winrt/Windows.Storage.Search.h>
 #include <winrt/Windows.Storage.Streams.h>
 #include <winrt/Microsoft.UI.Xaml.Media.Imaging.h>
+
+#include <microsoft.ui.xaml.window.h>
+#include <Shobjidl.h>
+#include <winrt/Windows.Storage.Pickers.h>

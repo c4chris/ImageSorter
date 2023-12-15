@@ -61,12 +61,12 @@ namespace winrt::ImageSorter::implementation
     co_return bitmap;
   }
 
-  IAsyncOperation<BitmapImage> ImageFileInfo::GetImageThumbnailAsync()
+  /*IAsyncOperation<BitmapImage> ImageFileInfo::GetImageThumbnailAsync()
   {
     auto thumbnail = co_await m_imageFile.GetThumbnailAsync(FileProperties::ThumbnailMode::PicturesView);
     BitmapImage bitmapImage{};
     bitmapImage.SetSource(thumbnail);
     thumbnail.Close();
     co_return bitmapImage;
-  }
+  }*/
 }
