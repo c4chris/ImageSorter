@@ -116,6 +116,7 @@ namespace winrt::ImageSorter::implementation
       Images().Append(co_await LoadImageInfoAsync(file));
     }
 
-    ImageGridView().ItemsSource(Images());
+    //ImageGridView().ItemsSource(Images());
+    ImageGridView().UpdateLayout();
   }
 }
