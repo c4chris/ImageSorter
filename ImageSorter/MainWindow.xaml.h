@@ -16,12 +16,18 @@ namespace winrt::ImageSorter::implementation
       m_images(winrt::single_threaded_observable_vector<IInspectable>())
     {
       InitializeComponent();
-      GetItemsAsync();
+      m_queue = DispatcherQueue();
+      //GetItemsAsync();
     }
 
     Windows::Foundation::Collections::IVector<Windows::Foundation::IInspectable> Images() const
     {
       return m_images;
+    }
+
+    Microsoft::UI::Dispatching::DispatcherQueue UIQueue() const
+    {
+      return m_queue;
     }
 
     void ImageGridView_ContainerContentChanging(
@@ -30,16 +36,17 @@ namespace winrt::ImageSorter::implementation
 
   private:
     Windows::Foundation::Collections::IVector<IInspectable> m_images{ nullptr };
+    Microsoft::UI::Dispatching::DispatcherQueue m_queue{ nullptr };
 
-    Windows::Foundation::IAsyncAction GetItemsAsync();
+    //Windows::Foundation::IAsyncAction GetItemsAsync();
     Windows::Foundation::IAsyncOperation<ImageSorter::ImageFileInfo> LoadImageInfoAsync(Windows::Storage::StorageFile);
-    fire_and_forget ShowImage(
+    Windows::Foundation::IAsyncAction ShowImage(
       Microsoft::UI::Xaml::Controls::ListViewBase const& sender,
       Microsoft::UI::Xaml::Controls::ContainerContentChangingEventArgs const& args);
     Windows::Foundation::IAsyncAction GetNewItemsAsync(winrt::Windows::Storage::StorageFolder picturesFolder);
-    fire_and_forget ShowFolderPickerAsync(HWND hWnd);
+    Windows::Foundation::IAsyncAction ShowFolderPickerAsync(HWND hWnd);
   public:
-      void RadioButtons_SelectionChanged(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Controls::SelectionChangedEventArgs const& e);
+      /*void RadioButtons_SelectionChanged(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Controls::SelectionChangedEventArgs const& e);*/
       void OpenClicked(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
       void ExitClicked(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
   };

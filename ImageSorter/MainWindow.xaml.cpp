@@ -24,27 +24,13 @@ namespace winrt
 
 namespace winrt::ImageSorter::implementation
 {
-  IAsyncAction MainWindow::GetItemsAsync()
-  {
-    StorageFolder appInstalledFolder = Package::Current().InstalledLocation();
-    StorageFolder picturesFolder = co_await appInstalledFolder.GetFolderAsync(L"Assets\\Samples");
-
-    auto result = picturesFolder.CreateFileQueryWithOptions(QueryOptions());
-
-    IVectorView<StorageFile> imageFiles = co_await result.GetFilesAsync();
-    for (auto&& file : imageFiles)
-    {
-      Images().Append(co_await LoadImageInfoAsync(file));
-    }
-
-    ImageGridView().ItemsSource(Images());
-  }
-
   IAsyncOperation<ImageSorter::ImageFileInfo> MainWindow::LoadImageInfoAsync(StorageFile file)
   {
     auto properties = co_await file.Properties().GetImagePropertiesAsync();
     ImageSorter::ImageFileInfo info(properties,
-      file, file.DisplayName(), file.DisplayType());
+      file, file.DisplayName(), file.DisplayType(), UIQueue());
+    std::string line = "LoadImage: " + to_string(properties.Title()) + ":" + to_string(file.DisplayName()) + "\n";
+    OutputDebugStringA(line.c_str());
     co_return info;
   }
 
@@ -63,11 +49,6 @@ namespace winrt::ImageSorter::implementation
     }
   }
 
-  void MainWindow::RadioButtons_SelectionChanged(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Controls::SelectionChangedEventArgs const& e)
-  {
-
-  }
-
   void MainWindow::OpenClicked(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e)
   {
     // show dialog
@@ -83,7 +64,7 @@ namespace winrt::ImageSorter::implementation
     this->Close();
   }
 
-  fire_and_forget MainWindow::ShowImage(ListViewBase const& sender, ContainerContentChangingEventArgs const& args)
+  IAsyncAction MainWindow::ShowImage(ListViewBase const& sender, ContainerContentChangingEventArgs const& args)
   {
     if (args.Phase() == 1)
     {
@@ -111,7 +92,7 @@ namespace winrt::ImageSorter::implementation
     ImageGridView().ItemsSource(Images());
   }
 
-  fire_and_forget MainWindow::ShowFolderPickerAsync(HWND hWnd)
+  IAsyncAction MainWindow::ShowFolderPickerAsync(HWND hWnd)
   {
     // Create a folder picker.
     Windows::Storage::Pickers::FolderPicker folderPicker;
@@ -124,6 +105,6 @@ namespace winrt::ImageSorter::implementation
     folderPicker.FileTypeFilter().Append(L"*");
     auto picturesFolder{ co_await folderPicker.PickSingleFolderAsync() };
     // the next bit needs to be async
-    GetNewItemsAsync(picturesFolder);
+    co_await GetNewItemsAsync(picturesFolder);
   }
 }

@@ -3,6 +3,7 @@
 #include "ImageFileInfo.h"
 #include "ImageFileInfo.g.cpp"
 #include <random>
+#include <MainWindow.xaml.h>
 
 using namespace std;
 namespace winrt
@@ -21,16 +22,14 @@ namespace winrt::ImageSorter::implementation
     winrt::Windows::Storage::FileProperties::ImageProperties const& properties,
     winrt::Windows::Storage::StorageFile const& imageFile,
     hstring const& name,
-    hstring const& type) :
+    hstring const& type,
+    Microsoft::UI::Dispatching::DispatcherQueue const& queue) :
     m_imageProperties{ properties },
     m_imageName{ name },
     m_imageFileType{ type },
-    m_imageFile{ imageFile }
+    m_imageFile{ imageFile },
+    m_uiQueue{ queue }
   {
-    auto rating = properties.Rating();
-    auto random = std::random_device();
-    std::uniform_int_distribution<> dist(1, 5);
-    ImageRating(rating == 0 ? dist(random) : rating);
   }
 
   void ImageFileInfo::ImageTitle(hstring const& value)
@@ -43,13 +42,69 @@ namespace winrt::ImageSorter::implementation
     }
   }
 
-  void ImageFileInfo::ImageRating(uint32_t value)
+  int32_t ImageFileInfo::ImageClass()
   {
-    if (ImageProperties().Rating() != value)
-    {
-      ImageProperties().Rating(value);
-      ImageProperties().SavePropertiesAsync();
-      OnPropertyChanged(L"ImageRating");
+    string n = to_string(ImageFile().Path());
+    std::string line = "ImageClass() on " + n + "\n";
+    OutputDebugStringA(line.c_str());
+    if (n.size() > 6) {
+      string end = n.substr(n.size() - 6);
+      if (end[0] == '_') {
+        switch (end[1]) {
+        case 'e':
+          return int32_t(ImageClassValue::Empty);
+        case 'g':
+          return int32_t(ImageClassValue::Good);
+        case 'm':
+          return int32_t(ImageClassValue::Mixed);
+        }
+      }
+    }
+    return int32_t(ImageClassValue::Unclassified);
+  }
+
+  IAsyncAction ImageFileInfo::ImageClass(int32_t value)
+  {
+    if (value < 0 || value > 3)
+      co_return;
+    auto iFile{ ImageFile() };
+    auto iClass{ ImageClass() };
+    auto q{ UIQueue() };
+    if (iClass == value)
+      co_return;
+    co_await winrt::resume_background();
+    char buf[256];
+    snprintf(buf, sizeof(buf), "ImageClass(%d) from %d\n", value, iClass);
+    OutputDebugStringA(buf);
+    string n = to_string(iFile.Name());
+    if (n.size() > 6) {
+      string end = n.substr(n.size() - 6);
+      string start;
+      if (end[0] == '_') {
+        start = n.substr(0, n.size() - 6);
+      }
+      else {
+        start = n.substr(0, n.size() - 4);
+      }
+      string code = "";
+      switch (value) {
+      case int32_t(ImageClassValue::Empty):
+        code = "_e";
+        break;
+      case int32_t(ImageClassValue::Good):
+        code = "_g";
+        break;
+      case int32_t(ImageClassValue::Mixed):
+        code = "_m";
+        break;
+      }
+      hstring desiredName = to_hstring(start + code + ".png");
+      std::string line = "*** Trying to rename " + n + " to " + to_string(desiredName) + "\n";
+      OutputDebugStringA(line.c_str());
+      co_await iFile.RenameAsync(desiredName, NameCollisionOption::GenerateUniqueName);
+      co_await wil::resume_foreground(q);
+      OutputDebugStringA("--- Looks like we succeeded... ???\n");
+      OnPropertyChanged(L"ImageClass");
     }
   }
 
@@ -57,16 +112,8 @@ namespace winrt::ImageSorter::implementation
   {
     IRandomAccessStream stream{ co_await ImageFile().OpenAsync(FileAccessMode::Read) };
     BitmapImage bitmap{};
-    bitmap.SetSource(stream);
+    co_await bitmap.SetSourceAsync(stream);
+    stream.Close();
     co_return bitmap;
   }
-
-  /*IAsyncOperation<BitmapImage> ImageFileInfo::GetImageThumbnailAsync()
-  {
-    auto thumbnail = co_await m_imageFile.GetThumbnailAsync(FileProperties::ThumbnailMode::PicturesView);
-    BitmapImage bitmapImage{};
-    bitmapImage.SetSource(thumbnail);
-    thumbnail.Close();
-    co_return bitmapImage;
-  }*/
 }

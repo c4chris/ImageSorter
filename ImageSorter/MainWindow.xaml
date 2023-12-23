@@ -36,8 +36,8 @@
             <Grid.Resources>
                 <DataTemplate x:Key="ImageGridView_ItemTemplate"
                           x:DataType="local:ImageFileInfo">
-                    <Grid Height="600"
-                      Width="600"
+                    <Grid Height="260"
+                      Width="1600"
                       Margin="8">
                         <Grid.RowDefinitions>
                             <RowDefinition />
@@ -45,8 +45,9 @@
                         </Grid.RowDefinitions>
 
                         <Image x:Name="ItemImage"
-                             Source="Assets/StoreLogo.png"
-                             Stretch="Uniform" />
+                               Source="Assets/StoreLogo.png"
+                               Height="192"
+                               Stretch="Uniform" />
 
                         <StackPanel Orientation="Vertical"
                                 Grid.Row="1">
@@ -62,17 +63,14 @@
                                        HorizontalAlignment="Center"
                                        Style="{StaticResource CaptionTextBlockStyle}"
                                        Margin="8,0,0,0" />
+                                <RadioButtons MaxColumns="4"
+                                      SelectedIndex="{x:Bind ImageClass, Mode=TwoWay}">
+                                    <x:String>U</x:String>
+                                    <x:String>E</x:String>
+                                    <x:String>G</x:String>
+                                    <x:String>M</x:String>
+                                </RadioButtons>
                             </StackPanel>
-
-                            <RatingControl Value="{x:Bind ImageRating}" IsReadOnly="True"/>
-                            <RadioButtons MaxColumns="4"
-                                      SelectedIndex="0"
-                                      SelectionChanged="RadioButtons_SelectionChanged">
-                                <x:String>U</x:String>
-                                <x:String>E</x:String>
-                                <x:String>G</x:String>
-                                <x:String>M</x:String>
-                            </RadioButtons>
                         </StackPanel>
                     </Grid>
                 </DataTemplate>

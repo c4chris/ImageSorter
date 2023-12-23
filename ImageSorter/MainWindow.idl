@@ -6,5 +6,6 @@ namespace ImageSorter
     {
         MainWindow();
         Windows.Foundation.Collections.IVector<IInspectable> Images{ get; };
+        Microsoft.UI.Dispatching.DispatcherQueue UIQueue{ get; };
     }
 }

@@ -12,7 +12,8 @@ namespace winrt::ImageSorter::implementation
       winrt::Windows::Storage::FileProperties::ImageProperties const& properties,
       winrt::Windows::Storage::StorageFile const& imageFile,
       hstring const& name,
-      hstring const& type);
+      hstring const& type,
+      Microsoft::UI::Dispatching::DispatcherQueue const& queue);
 
     winrt::Windows::Storage::FileProperties::ImageProperties ImageProperties()
     {
@@ -45,17 +46,19 @@ namespace winrt::ImageSorter::implementation
     }
 
     void ImageTitle(hstring const& value);
+    
+    int32_t ImageClass();
 
-    uint32_t ImageRating()
-    {
-      return ImageProperties().Rating();
-    }
-
-    void ImageRating(uint32_t value);
+    Windows::Foundation::IAsyncAction ImageClass(int32_t value);
 
     winrt::event_token PropertyChanged(winrt::Microsoft::UI::Xaml::Data::PropertyChangedEventHandler const& handler)
     {
       return m_propertyChanged.add(handler);
+    }
+
+    Microsoft::UI::Dispatching::DispatcherQueue UIQueue() const
+    {
+      return m_uiQueue;
     }
 
     void PropertyChanged(winrt::event_token const& token) noexcept
@@ -65,14 +68,13 @@ namespace winrt::ImageSorter::implementation
 
     Windows::Foundation::IAsyncOperation<Microsoft::UI::Xaml::Media::Imaging::BitmapImage> GetImageSourceAsync();
 
-    /*Windows::Foundation::IAsyncOperation<Microsoft::UI::Xaml::Media::Imaging::BitmapImage> GetImageThumbnailAsync();*/
-
   private:
     // File and information fields.
     Windows::Storage::FileProperties::ImageProperties m_imageProperties{ nullptr };
     Windows::Storage::StorageFile m_imageFile{ nullptr };
     hstring m_imageName;
     hstring m_imageFileType;
+    Microsoft::UI::Dispatching::DispatcherQueue m_uiQueue;
 
     event<Microsoft::UI::Xaml::Data::PropertyChangedEventHandler> m_propertyChanged;
     void OnPropertyChanged(hstring propertyName)
