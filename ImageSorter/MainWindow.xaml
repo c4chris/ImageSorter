@@ -51,7 +51,7 @@
 
                         <StackPanel Orientation="Vertical"
                                 Grid.Row="1">
-                            <TextBlock Text="{x:Bind ImageTitle}"
+                            <TextBlock Text="{x:Bind ImageName}"
                                    HorizontalAlignment="Center"
                                    Style="{StaticResource SubtitleTextBlockStyle}" />
                             <StackPanel Orientation="Horizontal"

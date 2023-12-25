@@ -13,6 +13,8 @@ namespace winrt::ImageSorter::implementation
       winrt::Windows::Storage::StorageFile const& imageFile,
       hstring const& name,
       hstring const& type,
+      uint32_t const& width,
+      uint32_t const& height,
       Microsoft::UI::Dispatching::DispatcherQueue const& queue);
 
     winrt::Windows::Storage::FileProperties::ImageProperties ImageProperties()
@@ -37,15 +39,19 @@ namespace winrt::ImageSorter::implementation
 
     hstring ImageDimensions()
     {
-      return to_hstring(ImageProperties().Width()) + L" x " + to_hstring(ImageProperties().Height());
+      return to_hstring(ImageWidth()) + L" x " + to_hstring(ImageHeight());
+      //return L"0 x 0";
     }
 
-    hstring ImageTitle()
+    uint32_t ImageWidth()
     {
-      return ImageProperties().Title() == L"" ? ImageName() : ImageProperties().Title();
+      return m_imageWidth;
     }
 
-    void ImageTitle(hstring const& value);
+    uint32_t ImageHeight()
+    {
+      return m_imageHeight;
+    }
     
     int32_t ImageClass();
 
@@ -74,6 +80,8 @@ namespace winrt::ImageSorter::implementation
     Windows::Storage::StorageFile m_imageFile{ nullptr };
     hstring m_imageName;
     hstring m_imageFileType;
+    uint32_t m_imageWidth;
+    uint32_t m_imageHeight;
     Microsoft::UI::Dispatching::DispatcherQueue m_uiQueue;
 
     event<Microsoft::UI::Xaml::Data::PropertyChangedEventHandler> m_propertyChanged;

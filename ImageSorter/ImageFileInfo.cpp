@@ -23,23 +23,17 @@ namespace winrt::ImageSorter::implementation
     winrt::Windows::Storage::StorageFile const& imageFile,
     hstring const& name,
     hstring const& type,
+    uint32_t const& width,
+    uint32_t const& height,
     Microsoft::UI::Dispatching::DispatcherQueue const& queue) :
     m_imageProperties{ properties },
     m_imageName{ name },
     m_imageFileType{ type },
     m_imageFile{ imageFile },
+    m_imageWidth{ width },
+    m_imageHeight{ height },
     m_uiQueue{ queue }
   {
-  }
-
-  void ImageFileInfo::ImageTitle(hstring const& value)
-  {
-    if (ImageProperties().Title() != value)
-    {
-      ImageProperties().Title(value);
-      ImageProperties().SavePropertiesAsync();
-      OnPropertyChanged(L"ImageTitle");
-    }
   }
 
   int32_t ImageFileInfo::ImageClass()

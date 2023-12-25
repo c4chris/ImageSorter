@@ -26,9 +26,9 @@ namespace winrt::ImageSorter::implementation
 {
   IAsyncOperation<ImageSorter::ImageFileInfo> MainWindow::LoadImageInfoAsync(StorageFile file)
   {
-    auto properties = co_await file.Properties().GetImagePropertiesAsync();
+    auto &properties = co_await file.Properties().GetImagePropertiesAsync();
     ImageSorter::ImageFileInfo info(properties,
-      file, file.DisplayName(), file.DisplayType(), UIQueue());
+      file, file.DisplayName(), file.DisplayType(), properties.Width(), properties.Height(), UIQueue());
     std::string line = "LoadImage: " + to_string(properties.Title()) + ":" + to_string(file.DisplayName()) + "\n";
     OutputDebugStringA(line.c_str());
     co_return info;
@@ -72,7 +72,10 @@ namespace winrt::ImageSorter::implementation
       auto templateRoot = args.ItemContainer().ContentTemplateRoot().try_as<Grid>();
       auto image = templateRoot.FindName(L"ItemImage").try_as<Image>();
       auto item = args.Item().try_as<ImageSorter::ImageFileInfo>();
-      image.Source(co_await get_self<ImageSorter::implementation::ImageFileInfo>(item)->GetImageSourceAsync());
+      //co_await winrt::resume_background();
+      auto &source{ co_await get_self<ImageSorter::implementation::ImageFileInfo>(item)->GetImageSourceAsync() };
+      co_await wil::resume_foreground(UIQueue());
+      image.Source(source);
     }
   }
 
@@ -103,7 +106,7 @@ namespace winrt::ImageSorter::implementation
 
     // Use the folder picker as usual.
     folderPicker.FileTypeFilter().Append(L"*");
-    auto picturesFolder{ co_await folderPicker.PickSingleFolderAsync() };
+    auto &picturesFolder{ co_await folderPicker.PickSingleFolderAsync() };
     // the next bit needs to be async
     co_await GetNewItemsAsync(picturesFolder);
   }
