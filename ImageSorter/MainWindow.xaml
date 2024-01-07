@@ -9,87 +9,58 @@
     mc:Ignorable="d">
 
     <Grid>
+        <Grid.Resources>
+            <Style TargetType="RadioButton" x:Key="RBStyle">
+                <Setter Property="FontSize" Value="16"/>
+            </Style>
+        </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-
-        <TextBlock TextWrapping="Wrap" Margin="0,0,0,12">
-                    Classify the images in Empty, Good and Mixed - this will change the files names accordingly
-        </TextBlock>
-        <MenuBar x:Name="myMenuBar" Grid.Row="1">
-            <MenuBarItem Title="File">
-                <MenuFlyoutItem x:Name ="t1" Text="Open" Click="OpenClicked">
-                    <MenuFlyoutItem.KeyboardAccelerators>
-                        <KeyboardAccelerator Modifiers="Control" Key="O"/>
-                    </MenuFlyoutItem.KeyboardAccelerators>
-                </MenuFlyoutItem>
-                <MenuFlyoutItem x:Name ="t4" Text="Exit" Click="ExitClicked">
-                    <MenuFlyoutItem.KeyboardAccelerators>
-                        <KeyboardAccelerator Modifiers="Control" Key="E"/>
-                    </MenuFlyoutItem.KeyboardAccelerators>
-                </MenuFlyoutItem>
-            </MenuBarItem>
-        </MenuBar>
-        <Grid Grid.Row="2">
-            <Grid.Resources>
-                <DataTemplate x:Key="ImageGridView_ItemTemplate"
-                          x:DataType="local:ImageFileInfo">
-                    <Grid Height="260"
-                      Width="1600"
-                      Margin="8">
-                        <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-
-                        <Image x:Name="ItemImage"
-                               Source="Assets/StoreLogo.png"
-                               Height="192"
-                               Stretch="Uniform" />
-
-                        <StackPanel Orientation="Vertical"
-                                Grid.Row="1">
-                            <TextBlock Text="{x:Bind ImageName}"
-                                   HorizontalAlignment="Center"
-                                   Style="{StaticResource SubtitleTextBlockStyle}" />
-                            <StackPanel Orientation="Horizontal"
-                                    HorizontalAlignment="Center">
-                                <TextBlock Text="{x:Bind ImageFileType}"
-                                       HorizontalAlignment="Center"
-                                       Style="{StaticResource CaptionTextBlockStyle}" />
-                                <TextBlock Text="{x:Bind ImageDimensions}"
-                                       HorizontalAlignment="Center"
-                                       Style="{StaticResource CaptionTextBlockStyle}"
-                                       Margin="8,0,0,0" />
-                                <RadioButtons MaxColumns="4"
-                                      SelectedIndex="{x:Bind ImageClass, Mode=TwoWay}">
-                                    <x:String>U</x:String>
-                                    <x:String>E</x:String>
-                                    <x:String>G</x:String>
-                                    <x:String>M</x:String>
-                                </RadioButtons>
-                            </StackPanel>
-                        </StackPanel>
+        <Border x:Name="AppTitleBar" Grid.Row="0" VerticalAlignment="Top">
+            <TextBlock x:Name="AppTitle" Text="{StaticResource AppTitleName}" HorizontalAlignment="Center" Margin="0,8,0,0" />
+        </Border>
+        <CommandBar Background="Transparent" IsOpen="False" DefaultLabelPosition="Right" Grid.Row="1">
+            <AppBarButton Icon="Folder" Label="Select Folder" Click="AppBarButton_Click"/>
+            <AppBarButton Icon="Edit" Label="Edit"/>
+            <AppBarButton Icon="Go" Label="About" Click="AppBarButton_Click_1"/>
+        </CommandBar>
+        <!-- The ItemsRepeater and ScrollViewer used: -->
+        <ScrollViewer VerticalScrollBarVisibility="Auto" x:Name="ImageScrollViewer"
+              VerticalScrollMode="Auto" Grid.Row="2">
+            <ScrollViewer.Resources>
+                <UniformGridLayout x:Name="UniformGridLayout" MinRowSpacing="8" MinColumnSpacing="8" ItemsJustification="SpaceEvenly"/>
+                <DataTemplate x:Key="ImageTemplate" x:DataType="local:ImageFileInfo">
+                    <Grid ColumnSpacing="8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <!-- <Button Click="Button_Click"  BorderBrush="{x:Bind ImageClassColor, Mode=OneWay}" FocusVisualPrimaryBrush="{x:Bind ImageClassColor, Mode=OneWay}" DataContext="{x:Bind}" KeyUp="Button_KeyUp"  PointerEntered="element_PointerEntered" PointerExited="element_PointerExited" Grid.Column="0"> -->
+                        <Button Click="Button_Click"  BorderBrush="{x:Bind ImageClassColor, Mode=OneWay}" FocusVisualPrimaryBrush="{x:Bind ImageClassColor, Mode=OneWay}" DataContext="{x:Bind}" KeyUp="Button_KeyUp" Grid.Column="0">
+                            <Image Source="{x:Bind FullName}" MaxHeight="192" MaxWidth="1600" />
+                        </Button>
+                        <RadioButtons x:Name="ClassRadioButtons" SelectedIndex="{x:Bind ImageClass, Mode=TwoWay}"  MaxColumns="2" Header="Class" Grid.Column="1">
+                            <RadioButton x:Name="U" Content="Unclassified" Foreground="Gold" Style="{StaticResource RBStyle}" />
+                            <RadioButton x:Name="E" Content="Empty" Style="{StaticResource RBStyle}" />
+                            <RadioButton x:Name="G" Content="Good" Foreground="SpringGreen" Style="{StaticResource RBStyle}" />
+                            <RadioButton x:Name="M" Content="Mixed" Foreground="Red" Style="{StaticResource RBStyle}" />
+                        </RadioButtons>
                     </Grid>
                 </DataTemplate>
-                <Style x:Key="ImageGridView_ItemContainerStyle"
-                     TargetType="GridViewItem">
-                    <Setter Property="Background" Value="Gray"/>
-                    <Setter Property="Margin" Value="8"/>
-                </Style>
-                <ItemsPanelTemplate x:Key="ImageGridView_ItemsPanelTemplate">
-                    <ItemsWrapGrid Orientation="Horizontal"
-                               HorizontalAlignment="Center"/>
-                </ItemsPanelTemplate>
-            </Grid.Resources>
-            <GridView x:Name="ImageGridView"
-                    ItemTemplate="{StaticResource ImageGridView_ItemTemplate}"
-                    ItemContainerStyle="{StaticResource ImageGridView_ItemContainerStyle}"
-                    ItemsPanel="{StaticResource ImageGridView_ItemsPanelTemplate}"
-                    ContainerContentChanging="ImageGridView_ContainerContentChanging">
-            </GridView>
-        </Grid>
+            </ScrollViewer.Resources>
+
+            <ItemsRepeater
+               ItemsSource="{x:Bind ImagesRepository.Images}"
+               Layout="{StaticResource UniformGridLayout}"
+               ItemTemplate="{StaticResource ImageTemplate}" />
+        </ScrollViewer>
+        <InfoBar x:Name="ImageInfoBar"
+                 Severity="Informational"
+                 Title="Images in our gallery"
+                 Grid.Row="3"/>
     </Grid>
 </Window>

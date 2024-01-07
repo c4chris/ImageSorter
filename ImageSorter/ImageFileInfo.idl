@@ -19,6 +19,44 @@ namespace ImageSorter
         UInt32 ImageWidth{ get; };
         UInt32 ImageHeight{ get; };
         Int32 ImageClass;
+        String ImageClassColor{ get; };
+        String FullName{ get; set; };
         Microsoft.UI.Dispatching.DispatcherQueue UIQueue{ get; };
     }
+
+    runtimeclass ImagesRepository : Windows.UI.Xaml.Data.INotifyPropertyChanged
+    {
+        ImagesRepository(String folder);
+        Windows.Foundation.Collections.IVector<IInspectable> Images{ get; };
+    }
+//        public ImageInfo(string fullName, string name)
+//        public string Name { get; set; };
+//        public string FullName { get; set; };
+//        public int ImageClass { get; set; };
+//        public string ImageClassColor { get; };
+//        public int ClassFromDetail { get; };
+//        public int RectIdx { get; set; };
+//        public void NextRect ();
+//        public int RectLeft { get; };
+//        public event PropertyChangedEventHandler PropertyChanged;
+//        protected virtual void OnPropertyChanged(string propertyName);
+//        private int rectIdx = 0;
+//        public static SolidColorBrush[] ColorBrush = {
+//            new SolidColorBrush(Colors.Gold),
+//            new SolidColorBrush(Colors.White),
+//            new SolidColorBrush(Colors.SpringGreen),
+//            new SolidColorBrush(Colors.Red),
+//            new SolidColorBrush(Colors.Blue),
+//        };
+//        private Window detailWindow = null;
+//        public Window DetailWindow { get; set; };
+//        public uint[] detail;
+//        private string fullName;
+//        public const uint NbDetailImg = 9;
+
+//    runtimeclass ImagesRepository : Microsoft.UI.Xaml.Data.INotifyPropertyChanged
+//    {
+//        public ObservableCollection<ImageInfo> Images;
+//        public void GetImages(string folderPath);
+//    }
 }

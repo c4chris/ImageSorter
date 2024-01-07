@@ -1,4 +1,6 @@
 // MainWindow.idl
+import "ImageFileInfo.idl";
+
 namespace ImageSorter
 {
     [default_interface]
@@ -7,5 +9,13 @@ namespace ImageSorter
         MainWindow();
         Windows.Foundation.Collections.IVector<IInspectable> Images{ get; };
         Microsoft.UI.Dispatching.DispatcherQueue UIQueue{ get; };
+        ImagesRepository ImagesRepository { get; };
+//        async void AppBarButton_Click(object sender, RoutedEventArgs e);
+//        void Button_Click(object sender, RoutedEventArgs e);
+//        void Window_Closed(object sender, WindowEventArgs args);
+//        static void SetWindowSize(Window window, int width, int height);
+//        async void AppBarButton_Click_1(object sender, RoutedEventArgs e);
+//        void Btn_KeyUp(object sender, KeyRoutedEventArgs e);
+//        void Canvas_KeyUp(object sender, KeyRoutedEventArgs e);
     }
 }
