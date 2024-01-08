@@ -12,7 +12,8 @@ namespace winrt::ImageSorter::implementation
         // Xaml objects should not call InitializeComponent during construction.
         // See https://github.com/microsoft/cppwinrt/tree/master/nuget#initializecomponent
     //}
-    MainWindow::MainWindow()
+    MainWindow::MainWindow() :
+      m_repo{ ImageSorter::ImagesRepository() }
     {
       InitializeComponent();
       m_queue = DispatcherQueue();
@@ -50,7 +51,7 @@ namespace winrt::ImageSorter::implementation
 
   private:
     Microsoft::UI::Dispatching::DispatcherQueue m_queue{ nullptr };
-    ImageSorter::ImagesRepository m_repo = ImageSorter::ImagesRepository();
+    ImageSorter::ImagesRepository m_repo{ nullptr };
 
     //Windows::Foundation::IAsyncAction GetItemsAsync();
     Windows::Foundation::IAsyncOperation<ImageSorter::ImageFileInfo> LoadImageInfoAsync(Windows::Storage::StorageFile);

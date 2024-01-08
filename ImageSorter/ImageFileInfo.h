@@ -109,9 +109,9 @@ namespace winrt::ImageSorter::implementation
 
   struct ImagesRepository : ImagesRepositoryT<ImagesRepository>
   {
-    ImagesRepository()
+    ImagesRepository() :
+      m_images{ Windows::Foundation::Collections::IObservableVector<ImageSorter::ImageFileInfo>() }
     {
-      m_images = Windows::Foundation::Collections::IObservableVector<ImageSorter::ImageFileInfo>();
     }
 
     Windows::Foundation::Collections::IObservableVector<ImageSorter::ImageFileInfo> Images()
@@ -138,7 +138,7 @@ namespace winrt::ImageSorter::implementation
     hstring m_folder;
 
     event<Microsoft::UI::Xaml::Data::PropertyChangedEventHandler> m_propertyChanged;
-    Windows::Foundation::Collections::IObservableVector<ImageSorter::ImageFileInfo> m_images;
+    Windows::Foundation::Collections::IObservableVector<ImageSorter::ImageFileInfo> m_images{ nullptr };
     void OnPropertyChanged(hstring propertyName)
     {
       m_propertyChanged(*this, Microsoft::UI::Xaml::Data::PropertyChangedEventArgs(propertyName));
