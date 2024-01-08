@@ -7,7 +7,7 @@ namespace ImageSorter
     runtimeclass MainWindow : Microsoft.UI.Xaml.Window
     {
         MainWindow();
-        Windows.Foundation.Collections.IVector<IInspectable> Images{ get; };
+//        Windows.Foundation.Collections.IVector<IInspectable> Images{ get; };
         Microsoft.UI.Dispatching.DispatcherQueue UIQueue{ get; };
         ImagesRepository ImagesRepository { get; };
 //        async void AppBarButton_Click(object sender, RoutedEventArgs e);

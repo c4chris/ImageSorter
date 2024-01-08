@@ -12,12 +12,21 @@ namespace winrt::ImageSorter::implementation
         // Xaml objects should not call InitializeComponent during construction.
         // See https://github.com/microsoft/cppwinrt/tree/master/nuget#initializecomponent
     //}
-    MainWindow::MainWindow() :
-      m_images(winrt::single_threaded_observable_vector<IInspectable>())
+    MainWindow::MainWindow()
     {
       InitializeComponent();
       m_queue = DispatcherQueue();
       //GetItemsAsync();
+      hstring folderPath = Windows::ApplicationModel::Package::Current().InstalledPath() + L"\\Assets\\Images";
+      LoadImages(folderPath);
+    }
+
+    void MainWindow::LoadImages(hstring folderPath)
+    {
+      ImagesRepository().GetImages(folderPath);
+      //var numImages = ImagesRepository.Images.Count();
+      //ImageInfoBar.Message = $"{numImages} have loaded from {folderPath}";
+      //ImageInfoBar.IsOpen = true;
     }
 
     ImageSorter::ImagesRepository ImagesRepository()
@@ -25,10 +34,10 @@ namespace winrt::ImageSorter::implementation
       return m_repo;
     }
 
-    Windows::Foundation::Collections::IVector<Windows::Foundation::IInspectable> Images() const
-    {
-      return m_images;
-    }
+//    Windows::Foundation::Collections::IVector<Windows::Foundation::IInspectable> Images() const
+//    {
+//      return m_images;
+//    }
 
     Microsoft::UI::Dispatching::DispatcherQueue UIQueue() const
     {
@@ -40,7 +49,6 @@ namespace winrt::ImageSorter::implementation
       Microsoft::UI::Xaml::Controls::ContainerContentChangingEventArgs const& args);
 
   private:
-    Windows::Foundation::Collections::IVector<IInspectable> m_images{ nullptr };
     Microsoft::UI::Dispatching::DispatcherQueue m_queue{ nullptr };
     ImageSorter::ImagesRepository m_repo = ImageSorter::ImagesRepository();
 
@@ -66,13 +74,6 @@ namespace winrt::ImageSorter::implementation
 //            LoadImages(folderPath);
 //        }
 //
-//        private void LoadImages(string folderPath)
-//        {
-//            ImagesRepository.GetImages(folderPath);
-//            var numImages = ImagesRepository.Images.Count();
-//            ImageInfoBar.Message = $"{numImages} have loaded from {folderPath}";
-//            ImageInfoBar.IsOpen = true;
-//        }
 //
 //        private async void AppBarButton_Click(object sender, RoutedEventArgs e)
 //        {

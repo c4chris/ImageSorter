@@ -82,17 +82,18 @@ namespace winrt::ImageSorter::implementation
   IAsyncAction MainWindow::GetNewItemsAsync(winrt::Windows::Storage::StorageFolder picturesFolder)
   {
     // Somehow this part seems to need to be async...
-    auto result = picturesFolder.CreateFileQueryWithOptions(QueryOptions());
+//    auto result = picturesFolder.CreateFileQueryWithOptions(QueryOptions());
 
     //ImageGridView().ItemsSource(NULL);
-    Images().Clear();
-    IVectorView<StorageFile> imageFiles = co_await result.GetFilesAsync();
-    for (auto&& file : imageFiles)
-    {
-      Images().Append(co_await LoadImageInfoAsync(file));
-    }
+//    Images().Clear();
+//    IVectorView<StorageFile> imageFiles = co_await result.GetFilesAsync();
+//    for (auto&& file : imageFiles)
+//    {
+//      Images().Append(co_await LoadImageInfoAsync(file));
+//    }
 
     //ImageGridView().ItemsSource(Images());
+    co_await wil::resume_foreground(UIQueue());
   }
 
   IAsyncAction MainWindow::ShowFolderPickerAsync(HWND hWnd)
