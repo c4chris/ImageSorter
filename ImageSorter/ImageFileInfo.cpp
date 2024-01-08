@@ -2,6 +2,7 @@
 #include "pch.h"
 #include "ImageFileInfo.h"
 #include "ImageFileInfo.g.cpp"
+#include "ImagesRepository.g.cpp"
 #include <random>
 #include <MainWindow.xaml.h>
 
@@ -111,11 +112,6 @@ namespace winrt::ImageSorter::implementation
     co_return bitmap;
   }
 
-  ImagesRepository::ImagesRepository(
-    hstring const& folder) :
-    m_folder{ folder }
-  {
-  }
 //    public class ImageInfo : INotifyPropertyChanged
 //    {
 //        public ImageInfo(string fullName, string name)

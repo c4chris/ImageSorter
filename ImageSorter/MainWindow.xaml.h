@@ -20,9 +20,9 @@ namespace winrt::ImageSorter::implementation
       //GetItemsAsync();
     }
 
-    MainWindow::ImagesRepository ImagesRepository()
+    ImageSorter::ImagesRepository ImagesRepository()
     {
-      return nullptr;
+      return m_repo;
     }
 
     Windows::Foundation::Collections::IVector<Windows::Foundation::IInspectable> Images() const
@@ -42,6 +42,7 @@ namespace winrt::ImageSorter::implementation
   private:
     Windows::Foundation::Collections::IVector<IInspectable> m_images{ nullptr };
     Microsoft::UI::Dispatching::DispatcherQueue m_queue{ nullptr };
+    ImageSorter::ImagesRepository m_repo = ImageSorter::ImagesRepository();
 
     //Windows::Foundation::IAsyncAction GetItemsAsync();
     Windows::Foundation::IAsyncOperation<ImageSorter::ImageFileInfo> LoadImageInfoAsync(Windows::Storage::StorageFile);

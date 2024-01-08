@@ -1,6 +1,7 @@
 // ImageFileInfo.h
 #pragma once
 #include "ImageFileInfo.g.h"
+#include "ImagesRepository.g.h"
 
 namespace winrt::ImageSorter::implementation
 {
@@ -106,13 +107,42 @@ namespace winrt::ImageSorter::implementation
     }
   };
 
-  struct ImagesRepository : ImagesRepositoryT<ImagesRepositoryo>
+  struct ImagesRepository : ImagesRepositoryT<ImagesRepository>
   {
-    ImagesRepository() = default;
+    ImagesRepository()
+    {
+      m_images = Windows::Foundation::Collections::IObservableVector<ImageSorter::ImageFileInfo>();
+    }
 
-    ImagesRepository(hstring const& folder);
+    Windows::Foundation::Collections::IObservableVector<ImageSorter::ImageFileInfo> Images()
+    {
+      return m_images;
+    }
+
+    void ImagesRepository::GetImages(hstring const& folder)
+    {
+      m_folder = folder;
+    }
+
+    winrt::event_token PropertyChanged(winrt::Microsoft::UI::Xaml::Data::PropertyChangedEventHandler const& handler)
+    {
+      return m_propertyChanged.add(handler);
+    }
+
+    void PropertyChanged(winrt::event_token const& token) noexcept
+    {
+      m_propertyChanged.remove(token);
+    }
+
   private:
     hstring m_folder;
+
+    event<Microsoft::UI::Xaml::Data::PropertyChangedEventHandler> m_propertyChanged;
+    Windows::Foundation::Collections::IObservableVector<ImageSorter::ImageFileInfo> m_images;
+    void OnPropertyChanged(hstring propertyName)
+    {
+      m_propertyChanged(*this, Microsoft::UI::Xaml::Data::PropertyChangedEventArgs(propertyName));
+    }
   };
 //    public class ImageInfo : INotifyPropertyChanged
 //    {

@@ -24,10 +24,10 @@ namespace ImageSorter
         Microsoft.UI.Dispatching.DispatcherQueue UIQueue{ get; };
     }
 
-    runtimeclass ImagesRepository : Windows.UI.Xaml.Data.INotifyPropertyChanged
+    runtimeclass ImagesRepository
     {
-        ImagesRepository(String folder);
-        Windows.Foundation.Collections.IVector<IInspectable> Images{ get; };
+        ImagesRepository();
+        Windows.Foundation.Collections.IObservableVector<ImageSorter.ImageFileInfo> Images{ get; };
     }
 //        public ImageInfo(string fullName, string name)
 //        public string Name { get; set; };
