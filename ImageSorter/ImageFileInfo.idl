@@ -28,7 +28,7 @@ namespace ImageSorter
     {
         ImagesRepository();
         Windows.Foundation.Collections.IObservableVector<ImageSorter.ImageFileInfo> Images{ get; };
-        void GetImages(String folderPath);
+        Windows.Foundation.IAsyncAction GetImages(String folderPath);
     }
 //        public ImageInfo(string fullName, string name)
 //        public string Name { get; set; };

@@ -22,13 +22,7 @@ namespace winrt::ImageSorter::implementation
       LoadImages(folderPath);
     }
 
-    void MainWindow::LoadImages(hstring folderPath)
-    {
-      ImagesRepository().GetImages(folderPath);
-      //var numImages = ImagesRepository.Images.Count();
-      //ImageInfoBar.Message = $"{numImages} have loaded from {folderPath}";
-      //ImageInfoBar.IsOpen = true;
-    }
+    void MainWindow::LoadImages(hstring folderPath);
 
     ImageSorter::ImagesRepository ImagesRepository()
     {

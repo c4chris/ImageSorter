@@ -110,8 +110,13 @@ namespace winrt::ImageSorter::implementation
   struct ImagesRepository : ImagesRepositoryT<ImagesRepository>
   {
     ImagesRepository() :
-      m_images{ Windows::Foundation::Collections::IObservableVector<ImageSorter::ImageFileInfo>() }
+      m_images{ single_threaded_observable_vector<ImageSorter::ImageFileInfo>() }
     {
+#ifdef _DEBUG
+      char buf[256];
+      snprintf(buf, sizeof(buf), "\n\nCreated m_images of size %u\n\n", m_images.Size());
+      OutputDebugStringA(buf);
+#endif
     }
 
     Windows::Foundation::Collections::IObservableVector<ImageSorter::ImageFileInfo> Images()
@@ -119,10 +124,7 @@ namespace winrt::ImageSorter::implementation
       return m_images;
     }
 
-    void ImagesRepository::GetImages(hstring const& folder)
-    {
-      m_folder = folder;
-    }
+    Windows::Foundation::IAsyncAction ImagesRepository::GetImages(hstring const& folder);
 
     winrt::event_token PropertyChanged(winrt::Microsoft::UI::Xaml::Data::PropertyChangedEventHandler const& handler)
     {
@@ -135,8 +137,6 @@ namespace winrt::ImageSorter::implementation
     }
 
   private:
-    hstring m_folder;
-
     event<Microsoft::UI::Xaml::Data::PropertyChangedEventHandler> m_propertyChanged;
     Windows::Foundation::Collections::IObservableVector<ImageSorter::ImageFileInfo> m_images{ nullptr };
     void OnPropertyChanged(hstring propertyName)

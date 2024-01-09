@@ -112,6 +112,46 @@ namespace winrt::ImageSorter::implementation
     co_return bitmap;
   }
 
+  IAsyncAction ImagesRepository::GetImages(hstring const& folderPath)
+  {
+    OutputDebugStringA("\n\n=== Trying to get images\n");
+    m_images.Clear();
+    auto fp{ folderPath }; // try to get a local copy of the thing
+    co_await winrt::resume_background();
+    std::string l1 = "=== GetFolderFromPathAsync " + to_string(fp) + "\n\n";
+    OutputDebugStringA(l1.c_str());
+    Windows::Storage::StorageFolder folder{ nullptr };
+    try
+    {
+      folder = co_await Windows::Storage::StorageFolder::GetFolderFromPathAsync(fp);
+    }
+    catch (winrt::hresult_error const& ex)
+    {
+      winrt::hresult hr = ex.code(); // HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND).
+      winrt::hstring message = ex.message(); // The system cannot find the file specified.
+      std::string e = "\n\n### Caught exception " + to_string(message) + "\n###\n\n";
+      OutputDebugStringA(e.c_str());
+    }
+    if (folder != nullptr)
+    {
+      OutputDebugStringA("\n\n=== Got the storage folder\n");
+      std::vector<hstring> filter{ L".png" };
+      Windows::Storage::Search::QueryOptions options = Windows::Storage::Search::QueryOptions(Search::CommonFileQuery::OrderByName, filter);
+      auto result = folder.CreateFileQueryWithOptions(options);
+      Collections::IVectorView<StorageFile> imageFiles = co_await result.GetFilesAsync();
+      OutputDebugStringA("\n\n=== Got the list of files\n");
+      for (auto&& file : imageFiles)
+      {
+        std::string line = "*** Would load image " + to_string(file.Name()) + " from " + to_string(file.Path()) + "\n";
+        OutputDebugStringA(line.c_str());
+        //Images.Add(new ImageInfo(file.FullName, file.Name));
+      }
+    }
+    else
+    {
+      OutputDebugStringA("\n\nfolder is nullptr\n\n");
+    }
+  }
 //    public class ImageInfo : INotifyPropertyChanged
 //    {
 //        public ImageInfo(string fullName, string name)
@@ -288,22 +328,5 @@ namespace winrt::ImageSorter::implementation
 //    {
 //        public ObservableCollection<ImageInfo> Images;
 //
-//        public void GetImages(string folderPath)
-//        {
-//            if (Images == null)
-//            {
-//                Images = new ObservableCollection<ImageInfo>();
-//            }
-//            else
-//            {
-//                Images.Clear();
-//            }
-//            var di = new DirectoryInfo(folderPath);
-//            var files = di.GetFiles("*.png");
-//            foreach (var file in files)
-//            {
-//                Images.Add(new ImageInfo(file.FullName, file.Name));
-//            }
-//        }
-//    }
+
 }

@@ -34,6 +34,14 @@ namespace winrt::ImageSorter::implementation
     co_return info;
   }
 
+  void MainWindow::LoadImages(hstring folderPath)
+  {
+    ImagesRepository().GetImages(folderPath);
+    auto numImages = ImagesRepository().Images().Size();
+    ImageInfoBar().Message(to_hstring(numImages) + L" have loaded from " + folderPath);
+    ImageInfoBar().IsOpen(true);
+  }
+
   void MainWindow::ImageGridView_ContainerContentChanging(ListViewBase const& sender, ContainerContentChangingEventArgs const& args)
   {
     if (args.InRecycleQueue())
