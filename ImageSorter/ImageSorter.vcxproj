@@ -146,6 +146,9 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Assets\Images\img0111_e.png" />
+    <Image Include="Assets\Images\img0112_16555.png" />
+    <Image Include="Assets\Images\img0113_16a55.png" />
     <Image Include="Assets\SplashScreen.scale-200.png" />
     <Image Include="Assets\LockScreenLogo.scale-200.png" />
     <Image Include="Assets\Square150x150Logo.scale-200.png" />
