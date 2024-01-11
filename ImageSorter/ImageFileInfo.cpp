@@ -19,50 +19,94 @@ namespace winrt
 
 namespace winrt::ImageSorter::implementation
 {
-  ImageFileInfo::ImageFileInfo(
-    winrt::Windows::Storage::FileProperties::ImageProperties const& properties,
-    winrt::Windows::Storage::StorageFile const& imageFile,
-    hstring const& name,
-    hstring const& type,
-    uint32_t const& width,
-    uint32_t const& height,
-    Microsoft::UI::Dispatching::DispatcherQueue const& queue) :
-    m_imageProperties{ properties },
-    m_imageName{ name },
-    m_imageFileType{ type },
-    m_imageFile{ imageFile },
-    m_imageWidth{ width },
-    m_imageHeight{ height },
-    m_uiQueue{ queue }
+  int32_t ImageFileInfo::Class()
   {
-  }
-
-  int32_t ImageFileInfo::ImageClass()
-  {
-    string n = to_string(ImageFile().Path());
-    std::string line = "ImageClass() on " + n + "\n";
-    OutputDebugStringA(line.c_str());
-    if (n.size() > 6) {
-      string end = n.substr(n.size() - 6);
-      if (end[0] == '_') {
-        switch (end[1]) {
-        case 'e':
-          return int32_t(ImageClassValue::Empty);
-        case 'g':
-          return int32_t(ImageClassValue::Good);
-        case 'm':
-          return int32_t(ImageClassValue::Mixed);
+    /*string n = to_string(ImageFile().Path());
+      std::string line = "ImageClass() on " + n + "\n";
+      OutputDebugStringA(line.c_str());
+      if (n.size() > 6) {
+        string end = n.substr(n.size() - 6);
+        if (end[0] == '_') {
+          switch (end[1]) {
+          case 'e':
+            return int32_t(ImageClassValue::Empty);
+          case 'g':
+            return int32_t(ImageClassValue::Good);
+          case 'm':
+            return int32_t(ImageClassValue::Mixed);
+          }
         }
       }
-    }
-    return int32_t(ImageClassValue::Unclassified);
+      return int32_t(ImageClassValue::Unclassified);*/
+    //                string pattern = @"_[0-9a-f]{5}\.png$";
+    //                Match m = Regex.Match(FullName, pattern, RegexOptions.IgnoreCase);
+    //                if (m.Success)
+    //                {
+    //                    var v = Convert.ToUInt32(m.Value.Substring(1,5),16);
+    //                    int[] cnt = new int[4];
+    //                    for (int i = 0; i < NbDetailImg; i++)
+    //                    {
+    //                        uint t = v & 3;
+    //                        v >>= 2;
+    //                        cnt[t] += 1;
+    //                    }
+    //                    if (cnt[0] > 0) return 0;
+    //                    if (cnt[3] > 0) return 3;
+    //                    if (cnt[2] > 0) return 2;
+    //                    return 1;
+    //                }
+    //                string p2 = @"_[egm]\.png$";
+    //                Match m2 = Regex.Match(FullName, p2, RegexOptions.IgnoreCase);
+    //                if (m2.Success)
+    //                {
+    //                    switch (m2.Value[1])
+    //                    {
+    //                        case 'e':
+    //                            return 1;
+    //                        case 'g':
+    //                            return 2;
+    //                        case 'm':
+    //                            return 3;
+    //                    }
+    //                }
+    //                return 0;
+    return 0;
   }
 
-  IAsyncAction ImageFileInfo::ImageClass(int32_t value)
+  Windows::Foundation::IAsyncAction ImageFileInfo::Class(int32_t value)
   {
+    //                if (value < 0 || value > 3) return;
+    //                if (value == ImageClass) return;
+    //                if (FullName.Length <= 6) return;
+    //                string end = FullName.Substring(FullName.Length - 6);
+    //                string start;
+    //                if (end[0] == '_')
+    //                {
+    //                    start = FullName.Substring(0, FullName.Length - 6);
+    //                }
+    //                else
+    //                {
+    //                    start = FullName.Substring(0, FullName.Length - 4);
+    //                }
+    //                string code = "";
+    //                switch (value)
+    //                {
+    //                    case 1:
+    //                        code = "_e";
+    //                        break;
+    //                    case 2:
+    //                        code = "_g";
+    //                        break;
+    //                    case 3:
+    //                        code = "_m";
+    //                        break;
+    //                }
+    //                string desiredName = start + code + ".png";
+    //                File.Move(FullName, desiredName);
+    //                FullName = desiredName;
     if (value < 0 || value > 3)
       co_return;
-    auto iFile{ ImageFile() };
+    /*auto iFile{ ImageFile() };
     auto iClass{ ImageClass() };
     auto q{ UIQueue() };
     if (iClass == value)
@@ -98,25 +142,74 @@ namespace winrt::ImageSorter::implementation
       OutputDebugStringA(line.c_str());
       co_await iFile.RenameAsync(desiredName, NameCollisionOption::GenerateUniqueName);
       co_await wil::resume_foreground(q);
-      OutputDebugStringA("--- Looks like we succeeded... ???\n");
-      OnPropertyChanged(L"ImageClass");
-    }
+      OutputDebugStringA("--- Looks like we succeeded... ???\n");*/
+    OnPropertyChanged(L"Class");
   }
 
-  IAsyncOperation<BitmapImage> ImageFileInfo::GetImageSourceAsync()
+  hstring ImageFileInfo::ClassColor()
+  {
+    switch (Class())
+    {
+    case 1: return L"White";
+    case 2: return L"SpringGreen";
+    case 3: return L"Red";
+    }
+    return L"Gold";
+  }
+
+  int32_t ImageFileInfo::ClassFromDetails()
+  {
+    //                int[] cnt = new int[4];
+    //                for (int i = 0; i < NbDetailImg; i++)
+    //                {
+    //                    cnt[detail[i]] += 1;
+    //                }
+    //                if (cnt[0] > 0) return 0;
+    //                if (cnt[3] > 0) return 3;
+    //                if (cnt[2] > 0) return 2;
+    return 1;
+  }
+
+  int32_t ImageFileInfo::RectIdx()
+  {
+    return m_rectIdx;
+  }
+
+  void ImageFileInfo::RectIdx(int32_t value)
+  {
+    //Debug.WriteLine($"Rect moved from {rectLeft}");
+    m_rectIdx = value;
+    OnPropertyChanged(L"RectIdx");
+    //Debug.WriteLine($"Rect moved to {rectLeft}");
+  }
+
+  int32_t ImageFileInfo::RectLeft()
+  {
+    return m_rectIdx * 88;
+  }
+
+  void ImageFileInfo::NextRect()
+  {
+    auto next = RectIdx() + 1;
+    if (next >= NbDetailImg) next = 0;
+    RectIdx(next);
+  }
+
+  /*IAsyncOperation<BitmapImage> ImageFileInfo::GetImageSourceAsync()
   {
     IRandomAccessStream stream{ co_await ImageFile().OpenAsync(FileAccessMode::Read) };
     BitmapImage bitmap{};
     co_await bitmap.SetSourceAsync(stream);
     stream.Close();
     co_return bitmap;
-  }
+  }*/
 
-  IAsyncAction ImagesRepository::GetImages(hstring const& folderPath)
+  IAsyncAction ImagesRepository::GetImages(hstring const& folderPath, Microsoft::UI::Dispatching::DispatcherQueue queue)
   {
     OutputDebugStringA("\n\n=== Trying to get images\n");
     m_images.Clear();
     auto fp{ folderPath }; // try to get a local copy of the thing
+    auto q{ queue };
     co_await winrt::resume_background();
     std::string l1 = "=== GetFolderFromPathAsync " + to_string(fp) + "\n\n";
     OutputDebugStringA(l1.c_str());
@@ -132,24 +225,24 @@ namespace winrt::ImageSorter::implementation
       std::string e = "\n\n### Caught exception " + to_string(message) + "\n###\n\n";
       OutputDebugStringA(e.c_str());
     }
-    if (folder != nullptr)
-    {
-      OutputDebugStringA("\n\n=== Got the storage folder\n");
-      std::vector<hstring> filter{ L".png" };
-      Windows::Storage::Search::QueryOptions options = Windows::Storage::Search::QueryOptions(Search::CommonFileQuery::OrderByName, filter);
-      auto result = folder.CreateFileQueryWithOptions(options);
-      Collections::IVectorView<StorageFile> imageFiles = co_await result.GetFilesAsync();
-      OutputDebugStringA("\n\n=== Got the list of files\n");
-      for (auto&& file : imageFiles)
-      {
-        std::string line = "*** Would load image " + to_string(file.Name()) + " from " + to_string(file.Path()) + "\n";
-        OutputDebugStringA(line.c_str());
-        //Images.Add(new ImageInfo(file.FullName, file.Name));
-      }
-    }
-    else
+    if (folder == nullptr)
     {
       OutputDebugStringA("\n\nfolder is nullptr\n\n");
+      co_return;
+    }
+    OutputDebugStringA("\n\n=== Got the storage folder\n");
+    std::vector<hstring> filter{ L".png" };
+    Windows::Storage::Search::QueryOptions options = Windows::Storage::Search::QueryOptions(Search::CommonFileQuery::OrderByName, filter);
+    auto result = folder.CreateFileQueryWithOptions(options);
+    Collections::IVectorView<StorageFile> imageFiles = co_await result.GetFilesAsync();
+    OutputDebugStringA("\n\n=== Got the list of files\n");
+    // I think we need to go back on the UI thread now...
+    co_await wil::resume_foreground(q);
+    for (auto&& file : imageFiles)
+    {
+      std::string line = "*** Would load image " + to_string(file.Name()) + " from " + to_string(file.Path()) + "\n";
+      OutputDebugStringA(line.c_str());
+      m_images.Append(ImageSorter::ImageFileInfo(file.Path(), file.Name()));
     }
   }
 //    public class ImageInfo : INotifyPropertyChanged
@@ -173,128 +266,6 @@ namespace winrt::ImageSorter::implementation
 //                    OnPropertyChanged(nameof(ImageClass));
 //                    OnPropertyChanged(nameof(ImageClassColor));
 //                }
-//            }
-//        }
-//        public int ImageClass
-//        {
-//            get
-//            {
-//                string pattern = @"_[0-9a-f]{5}\.png$";
-//                Match m = Regex.Match(FullName, pattern, RegexOptions.IgnoreCase);
-//                if (m.Success)
-//                {
-//                    var v = Convert.ToUInt32(m.Value.Substring(1,5),16);
-//                    int[] cnt = new int[4];
-//                    for (int i = 0; i < NbDetailImg; i++)
-//                    {
-//                        uint t = v & 3;
-//                        v >>= 2;
-//                        cnt[t] += 1;
-//                    }
-//                    if (cnt[0] > 0) return 0;
-//                    if (cnt[3] > 0) return 3;
-//                    if (cnt[2] > 0) return 2;
-//                    return 1;
-//                }
-//                string p2 = @"_[egm]\.png$";
-//                Match m2 = Regex.Match(FullName, p2, RegexOptions.IgnoreCase);
-//                if (m2.Success)
-//                {
-//                    switch (m2.Value[1])
-//                    {
-//                        case 'e':
-//                            return 1;
-//                        case 'g':
-//                            return 2;
-//                        case 'm':
-//                            return 3;
-//                    }
-//                }
-//                return 0;
-//            }
-//            set
-//            {
-//                if (value < 0 || value > 3) return;
-//                if (value == ImageClass) return;
-//                if (FullName.Length <= 6) return;
-//                string end = FullName.Substring(FullName.Length - 6);
-//                string start;
-//                if (end[0] == '_')
-//                {
-//                    start = FullName.Substring(0, FullName.Length - 6);
-//                }
-//                else
-//                {
-//                    start = FullName.Substring(0, FullName.Length - 4);
-//                }
-//                string code = "";
-//                switch (value)
-//                {
-//                    case 1:
-//                        code = "_e";
-//                        break;
-//                    case 2:
-//                        code = "_g";
-//                        break;
-//                    case 3:
-//                        code = "_m";
-//                        break;
-//                }
-//                string desiredName = start + code + ".png";
-//                File.Move(FullName, desiredName);
-//                FullName = desiredName;
-//            }
-//        }
-//        public string ImageClassColor
-//        {
-//            get
-//            {
-//                switch(ImageClass)
-//                {
-//                    case 1: return "White";
-//                    case 2: return "SpringGreen";
-//                    case 3: return "Red";
-//                    default: return "Gold";
-//                }
-//            }
-//        }
-//        public int ClassFromDetail
-//        {
-//            get
-//            {
-//                int[] cnt = new int[4];
-//                for (int i = 0; i < NbDetailImg; i++)
-//                {
-//                    cnt[detail[i]] += 1;
-//                }
-//                if (cnt[0] > 0) return 0;
-//                if (cnt[3] > 0) return 3;
-//                if (cnt[2] > 0) return 2;
-//                return 1;
-//            }
-//        }
-//        public int RectIdx
-//        {
-//            get { return rectIdx; }
-//            set
-//            {
-//                //Debug.WriteLine($"Rect moved from {rectLeft}");
-//                rectIdx = value;
-//                OnPropertyChanged(nameof(RectIdx));
-//                //Debug.WriteLine($"Rect moved to {rectLeft}");
-//            }
-//        }
-//        public void NextRect ()
-//        {
-//            var next = RectIdx + 1;
-//            if (next >= NbDetailImg) next = 0;
-//            RectIdx = next;
-//        }
-//        public int RectLeft
-//        {
-//            get
-//            {
-//                return rectIdx * 88;
 //            }
 //        }
 //        public event PropertyChangedEventHandler PropertyChanged;

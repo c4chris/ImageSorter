@@ -48,12 +48,12 @@ namespace winrt::ImageSorter::implementation
     ImageSorter::ImagesRepository m_repo{ nullptr };
 
     //Windows::Foundation::IAsyncAction GetItemsAsync();
-    Windows::Foundation::IAsyncOperation<ImageSorter::ImageFileInfo> LoadImageInfoAsync(Windows::Storage::StorageFile);
-    Windows::Foundation::IAsyncAction ShowImage(
-      Microsoft::UI::Xaml::Controls::ListViewBase const& sender,
-      Microsoft::UI::Xaml::Controls::ContainerContentChangingEventArgs const& args);
-    Windows::Foundation::IAsyncAction GetNewItemsAsync(winrt::Windows::Storage::StorageFolder picturesFolder);
-    Windows::Foundation::IAsyncAction ShowFolderPickerAsync(HWND hWnd);
+    //Windows::Foundation::IAsyncOperation<ImageSorter::ImageFileInfo> LoadImageInfoAsync(Windows::Storage::StorageFile);
+    //Windows::Foundation::IAsyncAction ShowImage(
+    //  Microsoft::UI::Xaml::Controls::ListViewBase const& sender,
+    //  Microsoft::UI::Xaml::Controls::ContainerContentChangingEventArgs const& args);
+    //Windows::Foundation::IAsyncAction GetNewItemsAsync(winrt::Windows::Storage::StorageFolder picturesFolder);
+    //Windows::Foundation::IAsyncAction ShowFolderPickerAsync(HWND hWnd);
   public:
       /*void RadioButtons_SelectionChanged(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Controls::SelectionChangedEventArgs const& e);*/
       void OpenClicked(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);

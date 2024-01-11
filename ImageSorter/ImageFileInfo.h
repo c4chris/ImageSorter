@@ -9,78 +9,49 @@ namespace winrt::ImageSorter::implementation
   {
     ImageFileInfo() = default;
 
-    ImageFileInfo(
-      winrt::Windows::Storage::FileProperties::ImageProperties const& properties,
-      winrt::Windows::Storage::StorageFile const& imageFile,
-      hstring const& name,
-      hstring const& type,
-      uint32_t const& width,
-      uint32_t const& height,
-      Microsoft::UI::Dispatching::DispatcherQueue const& queue);
-
-    winrt::Windows::Storage::FileProperties::ImageProperties ImageProperties()
+    ImageFileInfo::ImageFileInfo(hstring const& path, hstring const& name) :
+      m_path{ path },
+      m_name{ name }
     {
-      return m_imageProperties;
+      m_rectIdx = 0;
+      memset(detail, 0, sizeof(detail));
     }
 
-    winrt::Windows::Storage::StorageFile ImageFile()
+    hstring Path()
     {
-      return m_imageFile;
+      return m_path;
     }
 
-    hstring ImageName()
+    void Path(hstring const& value)
     {
-      return m_imageName;
+      m_path = value;
+      OnPropertyChanged(L"Path");
     }
 
-    hstring ImageFileType()
+    hstring Name()
     {
-      return m_imageFileType;
+      return m_name;
     }
 
-    hstring ImageDimensions()
-    {
-      return to_hstring(ImageWidth()) + L" x " + to_hstring(ImageHeight());
-      //return L"0 x 0";
-    }
+    int32_t Class();
 
-    uint32_t ImageWidth()
-    {
-      return m_imageWidth;
-    }
+    Windows::Foundation::IAsyncAction Class(int32_t value);
 
-    uint32_t ImageHeight()
-    {
-      return m_imageHeight;
-    }
-    
-    int32_t ImageClass();
+    hstring ClassColor();
 
-    hstring ImageClassColor()
-    {
-      return L"red";
-    }
+    int32_t ClassFromDetails();
 
-    hstring FullName()
-    {
-      return L"unknown";
-    }
+    int32_t RectIdx();
 
-    void FullName(hstring const& value)
-    {
+    void RectIdx(int32_t value);
 
-    }
+    int32_t RectLeft();
 
-    Windows::Foundation::IAsyncAction ImageClass(int32_t value);
+    void NextRect();
 
     winrt::event_token PropertyChanged(winrt::Microsoft::UI::Xaml::Data::PropertyChangedEventHandler const& handler)
     {
       return m_propertyChanged.add(handler);
-    }
-
-    Microsoft::UI::Dispatching::DispatcherQueue UIQueue() const
-    {
-      return m_uiQueue;
     }
 
     void PropertyChanged(winrt::event_token const& token) noexcept
@@ -88,17 +59,13 @@ namespace winrt::ImageSorter::implementation
       m_propertyChanged.remove(token);
     }
 
-    Windows::Foundation::IAsyncOperation<Microsoft::UI::Xaml::Media::Imaging::BitmapImage> GetImageSourceAsync();
+    static const uint32_t NbDetailImg = 9;
 
   private:
-    // File and information fields.
-    Windows::Storage::FileProperties::ImageProperties m_imageProperties{ nullptr };
-    Windows::Storage::StorageFile m_imageFile{ nullptr };
-    hstring m_imageName;
-    hstring m_imageFileType;
-    uint32_t m_imageWidth;
-    uint32_t m_imageHeight;
-    Microsoft::UI::Dispatching::DispatcherQueue m_uiQueue;
+    hstring m_path;
+    hstring m_name;
+    int32_t m_rectIdx;
+    int32_t detail[NbDetailImg];
 
     event<Microsoft::UI::Xaml::Data::PropertyChangedEventHandler> m_propertyChanged;
     void OnPropertyChanged(hstring propertyName)
@@ -124,7 +91,7 @@ namespace winrt::ImageSorter::implementation
       return m_images;
     }
 
-    Windows::Foundation::IAsyncAction ImagesRepository::GetImages(hstring const& folder);
+    Windows::Foundation::IAsyncAction ImagesRepository::GetImages(hstring const& folder, Microsoft::UI::Dispatching::DispatcherQueue queue);
 
     winrt::event_token PropertyChanged(winrt::Microsoft::UI::Xaml::Data::PropertyChangedEventHandler const& handler)
     {
@@ -311,9 +278,8 @@ namespace winrt::ImageSorter::implementation
 //                OnPropertyChanged(nameof(DetailWindow));
 //            }
 //        }
-//        public uint[] detail;
+//        
 //        private string fullName;
-//        public const uint NbDetailImg = 9;
 //    }
 //
 //    public class ImagesRepository

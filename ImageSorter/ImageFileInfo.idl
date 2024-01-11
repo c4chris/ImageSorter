@@ -10,25 +10,23 @@ namespace ImageSorter
 
     runtimeclass ImageFileInfo : Microsoft.UI.Xaml.Data.INotifyPropertyChanged
     {
-        ImageFileInfo(Windows.Storage.FileProperties.ImageProperties properties, Windows.Storage.StorageFile imageFile, String name, String type, UInt32 width, UInt32 height, Microsoft.UI.Dispatching.DispatcherQueue queue);
-        Windows.Storage.FileProperties.ImageProperties ImageProperties{ get; };
-        Windows.Storage.StorageFile ImageFile{ get; };
-        String ImageName{ get; };
-        String ImageFileType{ get; };
-        String ImageDimensions{ get; };
-        UInt32 ImageWidth{ get; };
-        UInt32 ImageHeight{ get; };
-        Int32 ImageClass;
-        String ImageClassColor{ get; };
-        String FullName{ get; set; };
-        Microsoft.UI.Dispatching.DispatcherQueue UIQueue{ get; };
+        ImageFileInfo(String Path, String Name);
+        String Path{ get; set; };
+        String Name{ get; };
+        Int32 Class{ get; set; };
+        String ClassColor{ get; };
+        Int32 ClassFromDetails{ get; };
+        Int32 RectIdx{ get; set; };
+        Int32 RectLeft{ get; };
+        void NextRect();
+        event Microsoft.UI.Xaml.Data.PropertyChangedEventHandler PropertyChanged;
     }
 
     runtimeclass ImagesRepository
     {
         ImagesRepository();
         Windows.Foundation.Collections.IObservableVector<ImageSorter.ImageFileInfo> Images{ get; };
-        Windows.Foundation.IAsyncAction GetImages(String folderPath);
+        Windows.Foundation.IAsyncAction GetImages(String folderPath, Microsoft.UI.Dispatching.DispatcherQueue queue);
     }
 //        public ImageInfo(string fullName, string name)
 //        public string Name { get; set; };
