@@ -69,82 +69,26 @@ namespace winrt::ImageSorter::implementation
     sender.try_as<UIElement>().StartAnimation(_springAnimation);
   }
 
-  //void MainWindow::ImageGridView_ContainerContentChanging(ListViewBase const& sender, ContainerContentChangingEventArgs const& args)
-  //{
-  //  if (args.InRecycleQueue())
-  //  {
-  //    auto templateRoot = args.ItemContainer().ContentTemplateRoot().try_as<Grid>();
-  //    auto image = templateRoot.FindName(L"ItemImage").try_as<Image>();
-  //    image.Source(nullptr);
-  //  }
-  //  if (args.Phase() == 0)
-  //  {
-  //    args.RegisterUpdateCallback({ this, &MainWindow::ShowImage });
-  //    args.Handled(true);
-  //  }
-  //}
-
-  //void MainWindow::OpenClicked(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e)
-  //{
-  //  // show dialog
-  //  // Retrieve the window handle (HWND) of the current WinUI 3 window.
-  //  auto windowNative{ this->m_inner.as<::IWindowNative>() };
-  //  HWND hWnd{ 0 };
-  //  windowNative->get_WindowHandle(&hWnd);
-  //  ShowFolderPickerAsync(hWnd);
-  //}
+  IAsyncAction MainWindow::AppBarButton_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e)
+  {
+    auto windowNative{ this->m_inner.as<::IWindowNative>() };
+    HWND hWnd{ 0 };
+    windowNative->get_WindowHandle(&hWnd);
+    auto folderPicker = Windows::Storage::Pickers::FolderPicker();
+    auto initializeWithWindow{ folderPicker.as<::IInitializeWithWindow>() };
+    initializeWithWindow->Initialize(hWnd);
+    folderPicker.FileTypeFilter().Append(L"*");
+    Windows::Storage::StorageFolder folder{ nullptr };
+    folder = co_await folderPicker.PickSingleFolderAsync();
+    if (folder != nullptr)
+    {
+      LoadImages(folder.Path());
+    }
+  }
 
   //void MainWindow::ExitClicked(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e)
   //{
   //  this->Close();
-  //}
-
-  //IAsyncAction MainWindow::ShowImage(ListViewBase const& sender, ContainerContentChangingEventArgs const& args)
-  //{
-  //  if (args.Phase() == 1)
-  //  {
-  //    // It's phase 1, so show this item's image.
-  //    auto templateRoot = args.ItemContainer().ContentTemplateRoot().try_as<Grid>();
-  //    auto image = templateRoot.FindName(L"ItemImage").try_as<Image>();
-  //    auto item = args.Item().try_as<ImageSorter::ImageFileInfo>();
-  //    //co_await winrt::resume_background();
-  //    auto &source{ co_await get_self<ImageSorter::implementation::ImageFileInfo>(item)->GetImageSourceAsync() };
-  //    co_await wil::resume_foreground(UIQueue());
-  //    image.Source(source);
-  //  }
-  //}
-
-  //IAsyncAction MainWindow::GetNewItemsAsync(winrt::Windows::Storage::StorageFolder picturesFolder)
-  //{
-    // Somehow this part seems to need to be async...
-//    auto result = picturesFolder.CreateFileQueryWithOptions(QueryOptions());
-
-    //ImageGridView().ItemsSource(NULL);
-//    Images().Clear();
-//    IVectorView<StorageFile> imageFiles = co_await result.GetFilesAsync();
-//    for (auto&& file : imageFiles)
-//    {
-//      Images().Append(co_await LoadImageInfoAsync(file));
-//    }
-
-    //ImageGridView().ItemsSource(Images());
-  //  co_await wil::resume_foreground(UIQueue());
-  //}
-
-  //IAsyncAction MainWindow::ShowFolderPickerAsync(HWND hWnd)
-  //{
-  //  // Create a folder picker.
-  //  Windows::Storage::Pickers::FolderPicker folderPicker;
-
-  //  // Initialize the folder picker with the window handle (HWND).
-  //  auto initializeWithWindow{ folderPicker.as<::IInitializeWithWindow>() };
-  //  initializeWithWindow->Initialize(hWnd);
-
-  //  // Use the folder picker as usual.
-  //  folderPicker.FileTypeFilter().Append(L"*");
-  //  auto &picturesFolder{ co_await folderPicker.PickSingleFolderAsync() };
-  //  // the next bit needs to be async
-  //  co_await GetNewItemsAsync(picturesFolder);
   //}
 
   void MainWindow::Button_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e)
@@ -275,20 +219,6 @@ namespace winrt::ImageSorter::implementation
     //            }
   }
 
-  void MainWindow::AppBarButton_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e)
-  {
-    //            FolderPicker folderPicker = new FolderPicker();
-    //            folderPicker.FileTypeFilter.Add("*");
-    //            var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
-    //            WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, hwnd);
-    //            var folder = await folderPicker.PickSingleFolderAsync();
-    //            if (folder != null)
-    //            {
-    //                LoadImages(folder.Path);
-    //            }
-  }
-
-
   void MainWindow::AppBarButton_Click_1(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e)
   {
     //            ContentDialog dialog = new ContentDialog();
@@ -303,32 +233,6 @@ namespace winrt::ImageSorter::implementation
     //
     //            var result = await dialog.ShowAsync();
   }
-//        ImagesRepository ImagesRepository { get; } = new();
-//        public MainWindow()
-//        {
-//            this.InitializeComponent();
-//            _ = TrySetMicaBackdrop(false);
-//            this.ExtendsContentIntoTitleBar = true;  // enable custom titlebar
-//            this.SetTitleBar(AppTitleBar);      // set user ui element as titlebar
-//            string folderPath = Windows.ApplicationModel.Package.Current.InstalledPath + "\\Assets\\Images";
-//            LoadImages(folderPath);
-//        }
-//
-//        private void LoadImages(string folderPath)
-//        {
-//            ImagesRepository.GetImages(folderPath);
-//            var numImages = ImagesRepository.Images.Count();
-//            ImageInfoBar.Message = $"{numImages} have loaded from {folderPath}";
-//            ImageInfoBar.IsOpen = true;
-//        }
-//
-//        private async void AppBarButton_Click(object sender, RoutedEventArgs e)
-//        {
-//        }
-//
-//        private void Button_Click(object sender, RoutedEventArgs e)
-//        {
-//        }
 //
 //        private void Window_Closed(object sender, WindowEventArgs args)
 //        {
@@ -345,22 +249,6 @@ namespace winrt::ImageSorter::implementation
 //            var windowId = Microsoft.UI.Win32Interop.GetWindowIdFromWindow(hwnd);
 //            var appWindow = Microsoft.UI.Windowing.AppWindow.GetFromWindowId(windowId);
 //            appWindow.Resize(new Windows.Graphics.SizeInt32(width, height));
-//        }
-//
-//        private void element_PointerEntered(object sender, PointerRoutedEventArgs e)
-//        {
-//            // Scale up to 1.5
-//            CreateOrUpdateSpringAnimation(1.05f);
-//
-//            (sender as UIElement).StartAnimation(_springAnimation);
-//        }
-//
-//        private void element_PointerExited(object sender, PointerRoutedEventArgs e)
-//        {
-//            // Scale back down to 1.0
-//            CreateOrUpdateSpringAnimation(1.0f);
-//
-//            (sender as UIElement).StartAnimation(_springAnimation);
 //        }
 //
 //        // Option 2 - Implement Mica with codebehind.

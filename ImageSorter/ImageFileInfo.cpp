@@ -207,7 +207,6 @@ namespace winrt::ImageSorter::implementation
   IAsyncAction ImagesRepository::GetImages(hstring const& folderPath, Microsoft::UI::Dispatching::DispatcherQueue queue)
   {
     OutputDebugStringA("\n\n=== Trying to get images\n");
-    m_images.Clear();
     auto fp{ folderPath }; // try to get a local copy of the thing
     auto q{ queue };
     co_await winrt::resume_background();
@@ -238,6 +237,7 @@ namespace winrt::ImageSorter::implementation
     OutputDebugStringA("\n\n=== Got the list of files\n");
     // I think we need to go back on the UI thread now...
     co_await wil::resume_foreground(q);
+    m_images.Clear();
     for (auto&& file : imageFiles)
     {
       std::string line = "*** Would load image " + to_string(file.Name()) + " from " + to_string(file.Path()) + "\n";

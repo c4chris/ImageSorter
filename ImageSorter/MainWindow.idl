@@ -11,6 +11,7 @@ namespace ImageSorter
         Microsoft.UI.Dispatching.DispatcherQueue UIQueue{ get; };
         ImagesRepository ImagesRepository { get; };
         Windows.Foundation.IAsyncAction LoadImages(String folderPath);
+        Windows.Foundation.IAsyncAction AppBarButton_Click(Object sender, Microsoft.UI.Xaml.RoutedEventArgs e);
 //        async void AppBarButton_Click(object sender, RoutedEventArgs e);
 //        void Button_Click(object sender, RoutedEventArgs e);
 //        void Window_Closed(object sender, WindowEventArgs args);
