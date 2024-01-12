@@ -10,6 +10,7 @@ namespace ImageSorter
 //        Windows.Foundation.Collections.IVector<IInspectable> Images{ get; };
         Microsoft.UI.Dispatching.DispatcherQueue UIQueue{ get; };
         ImagesRepository ImagesRepository { get; };
+        Windows.Foundation.IAsyncAction LoadImages(String folderPath);
 //        async void AppBarButton_Click(object sender, RoutedEventArgs e);
 //        void Button_Click(object sender, RoutedEventArgs e);
 //        void Window_Closed(object sender, WindowEventArgs args);

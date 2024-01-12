@@ -34,9 +34,9 @@ namespace winrt::ImageSorter::implementation
   //  co_return info;
   //}
 
-  void MainWindow::LoadImages(hstring folderPath)
+  IAsyncAction MainWindow::LoadImages(hstring folderPath)
   {
-    ImagesRepository().GetImages(folderPath, UIQueue());
+    co_await ImagesRepository().GetImages(folderPath, UIQueue());
     auto numImages = ImagesRepository().Images().Size();
     ImageInfoBar().Message(to_hstring(numImages) + L" have loaded from " + folderPath);
     ImageInfoBar().IsOpen(true);

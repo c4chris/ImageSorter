@@ -22,7 +22,7 @@ namespace winrt::ImageSorter::implementation
       LoadImages(folderPath);
     }
 
-    void MainWindow::LoadImages(hstring folderPath);
+    Windows::Foundation::IAsyncAction MainWindow::LoadImages(hstring folderPath);
 
     ImageSorter::ImagesRepository ImagesRepository()
     {
