@@ -46,7 +46,9 @@ namespace winrt::ImageSorter::implementation
   private:
     Microsoft::UI::Dispatching::DispatcherQueue m_queue{ nullptr };
     ImageSorter::ImagesRepository m_repo{ nullptr };
+    Microsoft::UI::Composition::SpringVector3NaturalMotionAnimation _springAnimation{ nullptr };
 
+    void MainWindow::CreateOrUpdateSpringAnimation(float finalValue);
     //Windows::Foundation::IAsyncAction GetItemsAsync();
     //Windows::Foundation::IAsyncOperation<ImageSorter::ImageFileInfo> LoadImageInfoAsync(Windows::Storage::StorageFile);
     //Windows::Foundation::IAsyncAction ShowImage(
@@ -403,6 +405,8 @@ void Button_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt:
 void Button_KeyUp(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Input::KeyRoutedEventArgs const& e);
 void AppBarButton_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
 void AppBarButton_Click_1(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
+void Button_PointerEntered(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Input::PointerRoutedEventArgs const& e);
+void Button_PointerExited(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Input::PointerRoutedEventArgs const& e);
 };
 }
 

@@ -42,6 +42,33 @@ namespace winrt::ImageSorter::implementation
     ImageInfoBar().IsOpen(true);
   }
 
+  void MainWindow::CreateOrUpdateSpringAnimation(float finalValue)
+  {
+    if (_springAnimation == nullptr)
+    {
+      auto compositor = this->Compositor();
+      if (compositor != nullptr)
+      {
+        _springAnimation = this->Compositor().CreateSpringVector3Animation();
+        _springAnimation.Target(L"Scale");
+      }
+    }
+
+    if (_springAnimation != nullptr) _springAnimation.FinalValue(Numerics::float3(finalValue));
+  }
+
+  void winrt::ImageSorter::implementation::MainWindow::Button_PointerEntered(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Input::PointerRoutedEventArgs const& e)
+  {
+    CreateOrUpdateSpringAnimation(1.05f);
+    sender.try_as<UIElement>().StartAnimation(_springAnimation);
+  }
+
+  void winrt::ImageSorter::implementation::MainWindow::Button_PointerExited(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Input::PointerRoutedEventArgs const& e)
+  {
+    CreateOrUpdateSpringAnimation(1.0f);
+    sender.try_as<UIElement>().StartAnimation(_springAnimation);
+  }
+
   //void MainWindow::ImageGridView_ContainerContentChanging(ListViewBase const& sender, ContainerContentChangingEventArgs const& args)
   //{
   //  if (args.InRecycleQueue())
@@ -318,23 +345,6 @@ namespace winrt::ImageSorter::implementation
 //            var windowId = Microsoft.UI.Win32Interop.GetWindowIdFromWindow(hwnd);
 //            var appWindow = Microsoft.UI.Windowing.AppWindow.GetFromWindowId(windowId);
 //            appWindow.Resize(new Windows.Graphics.SizeInt32(width, height));
-//        }
-//
-//        SpringVector3NaturalMotionAnimation _springAnimation;
-//
-//        private void CreateOrUpdateSpringAnimation(float finalValue)
-//        {
-//            if (_springAnimation == null)
-//            {
-//                Compositor compositor = this.Compositor;
-//                if (compositor is not null)
-//                {
-//                    _springAnimation = this.Compositor.CreateSpringVector3Animation();
-//                    _springAnimation.Target = "Scale";
-//                }
-//            }
-//
-//            _springAnimation.FinalValue = new Vector3(finalValue);
 //        }
 //
 //        private void element_PointerEntered(object sender, PointerRoutedEventArgs e)
