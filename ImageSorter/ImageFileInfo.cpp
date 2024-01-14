@@ -5,6 +5,7 @@
 #include "ImagesRepository.g.cpp"
 #include <random>
 #include <MainWindow.xaml.h>
+#include <regex>
 
 using namespace std;
 namespace winrt
@@ -21,55 +22,40 @@ namespace winrt::ImageSorter::implementation
 {
   int32_t ImageFileInfo::Class()
   {
-    /*string n = to_string(ImageFile().Path());
-      std::string line = "ImageClass() on " + n + "\n";
-      OutputDebugStringA(line.c_str());
-      if (n.size() > 6) {
-        string end = n.substr(n.size() - 6);
-        if (end[0] == '_') {
-          switch (end[1]) {
-          case 'e':
-            return int32_t(ImageClassValue::Empty);
-          case 'g':
-            return int32_t(ImageClassValue::Good);
-          case 'm':
-            return int32_t(ImageClassValue::Mixed);
-          }
-        }
+    const std::regex base_regex("_[0-9a-f]{5}\\.png$");
+    std::smatch base_match;
+    auto fname = to_string(m_path);
+    if (std::regex_search(fname, base_match, base_regex))
+    {
+      std::ssub_match base_sub_match = base_match[0];
+      std::string base = base_sub_match.str();
+      std::string s = base.substr(1, 5);
+      uint32_t v = std::stoul(s, nullptr, 16);
+      int cnt[4] = { 0 };
+      for (int i = 0; i < NbDetailImg; i++)
+      {
+        uint32_t t = v & 3;
+        v >>= 2;
+        cnt[t] += 1;
       }
-      return int32_t(ImageClassValue::Unclassified);*/
-    //                string pattern = @"_[0-9a-f]{5}\.png$";
-    //                Match m = Regex.Match(FullName, pattern, RegexOptions.IgnoreCase);
-    //                if (m.Success)
-    //                {
-    //                    var v = Convert.ToUInt32(m.Value.Substring(1,5),16);
-    //                    int[] cnt = new int[4];
-    //                    for (int i = 0; i < NbDetailImg; i++)
-    //                    {
-    //                        uint t = v & 3;
-    //                        v >>= 2;
-    //                        cnt[t] += 1;
-    //                    }
-    //                    if (cnt[0] > 0) return 0;
-    //                    if (cnt[3] > 0) return 3;
-    //                    if (cnt[2] > 0) return 2;
-    //                    return 1;
-    //                }
-    //                string p2 = @"_[egm]\.png$";
-    //                Match m2 = Regex.Match(FullName, p2, RegexOptions.IgnoreCase);
-    //                if (m2.Success)
-    //                {
-    //                    switch (m2.Value[1])
-    //                    {
-    //                        case 'e':
-    //                            return 1;
-    //                        case 'g':
-    //                            return 2;
-    //                        case 'm':
-    //                            return 3;
-    //                    }
-    //                }
-    //                return 0;
+      if (cnt[0] > 0) return 0;
+      if (cnt[3] > 0) return 3;
+      if (cnt[2] > 0) return 2;
+      return 1;
+    }
+    const std::regex base_regex2("_[egm]\\.png$");
+    if (std::regex_search(fname, base_match, base_regex2))
+    {
+      std::ssub_match base_sub_match = base_match[0];
+      std::string base = base_sub_match.str();
+      char c = base[1];
+      switch (c)
+      {
+      case 'e': return 1;
+      case 'g': return 2;
+      case 'm': return 3;
+      }
+    }
     return 0;
   }
 
