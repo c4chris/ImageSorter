@@ -9,9 +9,8 @@ namespace winrt::ImageSorter::implementation
   {
     ImageFileInfo() = default;
 
-    ImageFileInfo::ImageFileInfo(hstring const& path, hstring const& name) :
-      m_path{ path },
-      m_name{ name }
+    ImageFileInfo::ImageFileInfo(Windows::Storage::StorageFile file) :
+      m_file{ file }
     {
       m_rectIdx = 0;
       memset(detail, 0, sizeof(detail));
@@ -19,18 +18,12 @@ namespace winrt::ImageSorter::implementation
 
     hstring Path()
     {
-      return m_path;
-    }
-
-    void Path(hstring const& value)
-    {
-      m_path = value;
-      OnPropertyChanged(L"Path");
+      return m_file.Path();
     }
 
     hstring Name()
     {
-      return m_name;
+      return m_file.Name();
     }
 
     int32_t Class();
@@ -62,8 +55,7 @@ namespace winrt::ImageSorter::implementation
     static const uint32_t NbDetailImg = 9;
 
   private:
-    hstring m_path;
-    hstring m_name;
+    Windows::Storage::StorageFile m_file;
     int32_t m_rectIdx;
     int32_t detail[NbDetailImg];
 

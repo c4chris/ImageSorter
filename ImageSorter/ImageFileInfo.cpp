@@ -24,7 +24,7 @@ namespace winrt::ImageSorter::implementation
   {
     const std::regex base_regex("_[0-9a-f]{5}\\.png$");
     std::smatch base_match;
-    auto fname = to_string(m_path);
+    auto fname = to_string(m_file.Path());
     if (std::regex_search(fname, base_match, base_regex))
     {
       std::ssub_match base_sub_match = base_match[0];
@@ -61,75 +61,46 @@ namespace winrt::ImageSorter::implementation
 
   Windows::Foundation::IAsyncAction ImageFileInfo::Class(int32_t value)
   {
-    //                if (value < 0 || value > 3) return;
-    //                if (value == ImageClass) return;
-    //                if (FullName.Length <= 6) return;
-    //                string end = FullName.Substring(FullName.Length - 6);
-    //                string start;
-    //                if (end[0] == '_')
-    //                {
-    //                    start = FullName.Substring(0, FullName.Length - 6);
-    //                }
-    //                else
-    //                {
-    //                    start = FullName.Substring(0, FullName.Length - 4);
-    //                }
-    //                string code = "";
-    //                switch (value)
-    //                {
-    //                    case 1:
-    //                        code = "_e";
-    //                        break;
-    //                    case 2:
-    //                        code = "_g";
-    //                        break;
-    //                    case 3:
-    //                        code = "_m";
-    //                        break;
-    //                }
-    //                string desiredName = start + code + ".png";
-    //                File.Move(FullName, desiredName);
-    //                FullName = desiredName;
-    if (value < 0 || value > 3)
-      co_return;
-    /*auto iFile{ ImageFile() };
-    auto iClass{ ImageClass() };
-    auto q{ UIQueue() };
-    if (iClass == value)
-      co_return;
-    co_await winrt::resume_background();
-    char buf[256];
-    snprintf(buf, sizeof(buf), "ImageClass(%d) from %d\n", value, iClass);
-    OutputDebugStringA(buf);
-    string n = to_string(iFile.Name());
-    if (n.size() > 6) {
-      string end = n.substr(n.size() - 6);
-      string start;
-      if (end[0] == '_') {
-        start = n.substr(0, n.size() - 6);
+    if (value < 0 || value > 3) co_return;
+    if (value == Class()) co_return;
+    if (m_file.Path().size() <= 10) co_return;
+    auto sPath = to_string(m_file.Path());
+    auto end = sPath.substr(sPath.length() - 6);
+    std::string start;
+    if (end[0] == '_')
+    {
+      start = sPath.substr(0, sPath.length() - 6);
+    }
+    else
+    {
+      end = sPath.substr(sPath.length() - 10);
+      if (end[0] == '_')
+      {
+        start = sPath.substr(0, sPath.length() - 10);
       }
-      else {
-        start = n.substr(0, n.size() - 4);
+      else
+      {
+        start = sPath.substr(0, sPath.length() - 4);
       }
-      string code = "";
-      switch (value) {
-      case int32_t(ImageClassValue::Empty):
-        code = "_e";
-        break;
-      case int32_t(ImageClassValue::Good):
-        code = "_g";
-        break;
-      case int32_t(ImageClassValue::Mixed):
-        code = "_m";
-        break;
-      }
-      hstring desiredName = to_hstring(start + code + ".png");
-      std::string line = "*** Trying to rename " + n + " to " + to_string(desiredName) + "\n";
-      OutputDebugStringA(line.c_str());
-      co_await iFile.RenameAsync(desiredName, NameCollisionOption::GenerateUniqueName);
-      co_await wil::resume_foreground(q);
-      OutputDebugStringA("--- Looks like we succeeded... ???\n");*/
+    }
+    std::string code = "";
+    switch (value)
+    {
+    case 1:
+      code = "_e";
+      break;
+    case 2:
+      code = "_g";
+      break;
+    case 3:
+      code = "_m";
+      break;
+    }
+    hstring desiredName = to_hstring(start + code + ".png");
+    co_await m_file.RenameAsync(desiredName, NameCollisionOption::GenerateUniqueName);
     OnPropertyChanged(L"Class");
+    OnPropertyChanged(L"Path");
+    OnPropertyChanged(L"Name");
   }
 
   hstring ImageFileInfo::ClassColor()
@@ -228,7 +199,7 @@ namespace winrt::ImageSorter::implementation
     {
       std::string line = "*** Would load image " + to_string(file.Name()) + " from " + to_string(file.Path()) + "\n";
       OutputDebugStringA(line.c_str());
-      m_images.Append(ImageSorter::ImageFileInfo(file.Path(), file.Name()));
+      m_images.Append(ImageSorter::ImageFileInfo(file));
     }
   }
 //    public class ImageInfo : INotifyPropertyChanged

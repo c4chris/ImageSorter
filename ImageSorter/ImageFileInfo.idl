@@ -10,8 +10,8 @@ namespace ImageSorter
 
     runtimeclass ImageFileInfo : Microsoft.UI.Xaml.Data.INotifyPropertyChanged
     {
-        ImageFileInfo(String Path, String Name);
-        String Path{ get; set; };
+        ImageFileInfo(Windows.Storage.StorageFile File);
+        String Path{ get; };
         String Name{ get; };
         Int32 Class{ get; set; };
         String ClassColor{ get; };
