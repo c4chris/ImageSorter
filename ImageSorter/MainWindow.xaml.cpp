@@ -5,6 +5,7 @@
 #include "MainWindow.g.cpp"
 #endif
 #include "ImageFileInfo.h"
+#include <regex>
 
 //using namespace winrt;
 //using namespace Microsoft::UI::Xaml;
@@ -69,6 +70,19 @@ namespace winrt::ImageSorter::implementation
     sender.try_as<UIElement>().StartAnimation(_springAnimation);
   }
 
+  void MainWindow::Canvas_KeyUp(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Input::KeyRoutedEventArgs const& e)
+  {
+  }
+
+  void MainWindow::Window_Closed(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::WindowEventArgs const& args)
+  {
+    auto window = sender.try_as<Window>();
+    auto canvas = window.Content().try_as<Canvas>();
+    auto imageInfo = canvas.DataContext().as<ImageSorter::ImageFileInfo>();
+    imageInfo.DetailWindow(nullptr);
+    //Debug.WriteLine("### Set DetailWindow to null");
+  }
+
   IAsyncAction MainWindow::AppBarButton_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e)
   {
     auto windowNative{ this->m_inner.as<::IWindowNative>() };
@@ -91,30 +105,65 @@ namespace winrt::ImageSorter::implementation
   //  this->Close();
   //}
 
-  void MainWindow::Button_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e)
+  IAsyncAction MainWindow::Button_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e)
   {
-    //            var imageInfo = (sender as Button)?.DataContext as ImageInfo;
-    //            if (imageInfo != null)
-    //            {
-    //                if (imageInfo.DetailWindow != null)
-    //                {
-    //                    imageInfo.DetailWindow.Activate();
-    //                    return;
-    //                }
-    //                // initialize the details if we already have some info
-    //                string pattern = @"_[0-9a-f]{5}\.png$";
-    //                Match m = Regex.Match(imageInfo.FullName, pattern, RegexOptions.IgnoreCase);
-    //                if (m.Success)
-    //                {
-    //                    var v = Convert.ToUInt32(m.Value.Substring(1, 5),16);
-    //                    for (int i = 0; i < ImageInfo.NbDetailImg; i++)
-    //                    {
-    //                        imageInfo.detail[ImageInfo.NbDetailImg-1-i] = v & 3;
-    //                        v >>= 2;
-    //                    }
-    //                }
-    //                // Create the binding description.
-    //                Binding b = new Binding();
+    auto imageInfo = sender.try_as<Button>().DataContext().as<ImageSorter::ImageFileInfo>();
+    if (imageInfo == nullptr) co_return;
+    if (imageInfo.DetailWindow() != nullptr)
+    {
+      imageInfo.DetailWindow().Activate();
+      co_return;
+    }
+    // initialize the details if we already have some info
+    const std::regex base_regex("_[0-9a-f]{5}\\.png$");
+    std::smatch base_match;
+    auto fname = to_string(imageInfo.Path());
+    if (std::regex_search(fname, base_match, base_regex))
+    {
+      std::ssub_match base_sub_match = base_match[0];
+      std::string base = base_sub_match.str();
+      std::string s = base.substr(1, 5);
+      uint32_t v = std::stoul(s, nullptr, 16);
+      for (int i = 0; i < ImageFileInfo::NbDetailImg; i++)
+      {
+        imageInfo.setDetail(ImageFileInfo::NbDetailImg - 1 - i, v & 3);
+        v >>= 2;
+      }
+    }
+    // Create the binding description.
+    auto b = Data::Binding();
+    b.Mode(Data::BindingMode::OneWay);
+    PropertyPath propertyPath(L"RectLeft");
+    b.Path(propertyPath);
+    auto canvas = Canvas();
+    canvas.Width(900);
+    canvas.Height(250);
+    canvas.DataContext(imageInfo);
+    canvas.KeyUp({ this, &MainWindow::Canvas_KeyUp });
+    auto image = Image();
+    image.Source(Media::Imaging::BitmapImage{ Uri{ imageInfo.Path()}});
+    image.SetValue(Canvas::TopProperty(), box_value(4));
+    image.SetValue(Canvas::LeftProperty(), box_value(4));
+    canvas.Children().Append(image);
+    auto rect = Shapes::Rectangle();
+    rect.Stroke(ImageFileInfo::ColorBrush[4]);
+    rect.StrokeThickness(4.0);
+    rect.Width(104.0);
+    rect.Height(104.0);
+    rect.SetValue(Canvas::TopProperty(), box_value(0));
+    rect.SetBinding(Canvas::LeftProperty(), b);
+    canvas.Children().Append(rect);
+    auto window = Window();
+    window.Title(imageInfo.Name());
+    window.Content(canvas);
+    Microsoft::UI::Windowing::AppWindow appWindow = window.AppWindow();
+    auto size = Windows::Graphics::SizeInt32();
+    size.Width = 1300;
+    size.Height = 250;
+    appWindow.Resize(size);
+    window.Activate();
+    window.Closed({ this, &MainWindow::Window_Closed });
+    imageInfo.DetailWindow(window);
     //                b.Mode = BindingMode.OneWay;
     //                b.Source = imageInfo.RectLeft;
     //                Canvas canvas = new();
@@ -182,6 +231,7 @@ namespace winrt::ImageSorter::implementation
     //                imageInfo.DetailWindow = window;
     //            }
   }
+
   void MainWindow::Button_KeyUp(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Input::KeyRoutedEventArgs const& e)
   {
     //var imageInfo = (sender as Button) ? .DataContext as ImageInfo;
@@ -265,16 +315,6 @@ namespace winrt::ImageSorter::implementation
 //            }
 //
 //            return false; // Mica is not supported on this system.
-//        }
-//
-//        private async void AppBarButton_Click_1(object sender, RoutedEventArgs e)
-//        {
-
-//        }
-//
-//        private void Btn_KeyUp(object sender, KeyRoutedEventArgs e)
-//        {
-//            
 //        }
 //        private void Canvas_KeyUp(object sender, KeyRoutedEventArgs e)
 //        {

@@ -13,7 +13,15 @@ namespace winrt::ImageSorter::implementation
       m_file{ file }
     {
       m_rectIdx = 0;
-      memset(detail, 0, sizeof(detail));
+      memset(m_detail, 0, sizeof(m_detail));
+      if (ColorBrush[0] == nullptr)
+      {
+        ColorBrush[0] = Microsoft::UI::Xaml::Media::SolidColorBrush(Microsoft::UI::Colors::Gold());
+        ColorBrush[1] = Microsoft::UI::Xaml::Media::SolidColorBrush(Microsoft::UI::Colors::White());
+        ColorBrush[2] = Microsoft::UI::Xaml::Media::SolidColorBrush(Microsoft::UI::Colors::SpringGreen());
+        ColorBrush[3] = Microsoft::UI::Xaml::Media::SolidColorBrush(Microsoft::UI::Colors::Red());
+        ColorBrush[4] = Microsoft::UI::Xaml::Media::SolidColorBrush(Microsoft::UI::Colors::Blue());
+      }
     }
 
     hstring Path()
@@ -42,6 +50,16 @@ namespace winrt::ImageSorter::implementation
 
     void NextRect();
 
+    Microsoft::UI::Xaml::Window DetailWindow()
+    {
+      return m_detailWindow;
+    }
+
+    void DetailWindow(Microsoft::UI::Xaml::Window value)
+    {
+      m_detailWindow = value;
+    }
+
     winrt::event_token PropertyChanged(winrt::Microsoft::UI::Xaml::Data::PropertyChangedEventHandler const& handler)
     {
       return m_propertyChanged.add(handler);
@@ -52,12 +70,24 @@ namespace winrt::ImageSorter::implementation
       m_propertyChanged.remove(token);
     }
 
+    int32_t getDetail(uint32_t idx)
+    {
+      return m_detail[idx];
+    }
+
+    void setDetail(uint32_t idx, int32_t value)
+    {
+      m_detail[idx] = value;
+    }
+
     static const uint32_t NbDetailImg = 9;
+    static Microsoft::UI::Xaml::Media::Brush ColorBrush[5];
 
   private:
     Windows::Storage::StorageFile m_file;
     int32_t m_rectIdx;
-    int32_t detail[NbDetailImg];
+    int32_t m_detail[NbDetailImg];
+    Microsoft::UI::Xaml::Window m_detailWindow{ nullptr };
 
     event<Microsoft::UI::Xaml::Data::PropertyChangedEventHandler> m_propertyChanged;
     void OnPropertyChanged(hstring propertyName)

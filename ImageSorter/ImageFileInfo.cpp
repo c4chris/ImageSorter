@@ -20,6 +20,8 @@ namespace winrt
 
 namespace winrt::ImageSorter::implementation
 {
+  Media::Brush ImageFileInfo::ColorBrush[5] = { nullptr, nullptr, nullptr, nullptr, nullptr };
+
   int32_t ImageFileInfo::Class()
   {
     const std::regex base_regex("_[0-9a-f]{5}\\.png$");

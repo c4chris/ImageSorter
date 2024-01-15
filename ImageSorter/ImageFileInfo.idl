@@ -8,6 +8,7 @@ namespace ImageSorter
       Mixed = 3
   };
 
+    [Microsoft.UI.Xaml.Data.Bindable]
     runtimeclass ImageFileInfo : Microsoft.UI.Xaml.Data.INotifyPropertyChanged
     {
         ImageFileInfo(Windows.Storage.StorageFile File);
@@ -18,6 +19,9 @@ namespace ImageSorter
         Int32 ClassFromDetails{ get; };
         Int32 RectIdx{ get; set; };
         Int32 RectLeft{ get; };
+        Microsoft.UI.Xaml.Window DetailWindow{ get; set; };
+        Int32 getDetail(UInt32 idx);
+        void setDetail(UInt32 idx, Int32 value);
         void NextRect();
         event Microsoft.UI.Xaml.Data.PropertyChangedEventHandler PropertyChanged;
     }
