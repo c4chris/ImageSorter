@@ -153,6 +153,42 @@ namespace winrt::ImageSorter::implementation
     rect.SetValue(Canvas::TopProperty(), box_value(0));
     rect.SetBinding(Canvas::LeftProperty(), b);
     canvas.Children().Append(rect);
+    for (int i = 0; i < ImageFileInfo::NbDetailImg; i++)
+    {
+      auto r = Shapes::Rectangle();
+      r.Fill(ImageFileInfo::ColorBrush[imageInfo.getDetail(i)]);
+      r.Width(88.0);
+      r.Height(12.0);
+      r.SetValue(Canvas::LeftProperty(), box_value(i * 88 + 4));
+      r.SetValue(Canvas::TopProperty(), box_value(108));
+      canvas.Children().Append(r);
+    }
+    auto r1 = Shapes::Rectangle();
+    r1.Fill(ImageFileInfo::ColorBrush[imageInfo.Class()]);
+    r1.Width(12.0);
+    r1.Height(12.0);
+    r1.SetValue(Canvas::LeftProperty(), box_value(812));
+    r1.SetValue(Canvas::TopProperty(), box_value(30));
+    canvas.Children().Append(r1);
+    auto r2 = Shapes::Rectangle();
+    r2.Fill(ImageFileInfo::ColorBrush[imageInfo.ClassFromDetails()]);
+    r2.Width(12.0);
+    r2.Height(12.0);
+    r2.SetValue(Canvas::LeftProperty(), box_value(812));
+    r2.SetValue(Canvas::TopProperty(), box_value(50));
+    canvas.Children().Append(r2);
+    auto t1 = TextBlock();
+    t1.Text(L"Orig value");
+    t1.Width(70.0);
+    t1.SetValue(Canvas::LeftProperty(), box_value(830));
+    t1.SetValue(Canvas::TopProperty(), box_value(25));
+    canvas.Children().Append(t1);
+    auto t2 = TextBlock();
+    t2.Text(L"New value");
+    t2.Width(70.0);
+    t2.SetValue(Canvas::LeftProperty(), box_value(830));
+    t2.SetValue(Canvas::TopProperty(), box_value(45));
+    canvas.Children().Append(t2);
     auto window = Window();
     window.Title(imageInfo.Name());
     window.Content(canvas);
@@ -164,72 +200,6 @@ namespace winrt::ImageSorter::implementation
     window.Activate();
     window.Closed({ this, &MainWindow::Window_Closed });
     imageInfo.DetailWindow(window);
-    //                b.Mode = BindingMode.OneWay;
-    //                b.Source = imageInfo.RectLeft;
-    //                Canvas canvas = new();
-    //                canvas.Width = 900;
-    //                canvas.Height = 250;
-    //                canvas.DataContext = imageInfo;
-    //                canvas.KeyUp += Canvas_KeyUp;
-    //                Image image = new();
-    //                image.Source = new BitmapImage(new Uri(imageInfo.FullName, UriKind.Absolute));
-    //                image.SetValue(Canvas.TopProperty, 4);
-    //                image.SetValue(Canvas.LeftProperty, 4);
-    //                canvas.Children.Add(image);
-    //                var rect = new Rectangle();
-    //                rect.Stroke = ImageInfo.ColorBrush[4];
-    //                rect.StrokeThickness = 4;
-    //                rect.Width = 104;
-    //                rect.Height = 104;
-    //                rect.SetValue(Canvas.TopProperty, 0);
-    //                rect.SetBinding(Canvas.LeftProperty, b);
-    //                canvas.Children.Add(rect);
-    //                for (int i = 0; i < ImageInfo.NbDetailImg; i++)
-    //                {
-    //                    var r = new Rectangle();
-    //                    r.Fill = ImageInfo.ColorBrush[imageInfo.detail[i]];
-    //                    r.Width = 88;
-    //                    r.Height = 12;
-    //                    r.SetValue(Canvas.LeftProperty, i*88 + 4);
-    //                    r.SetValue(Canvas.TopProperty, 108);
-    //                    canvas.Children.Add(r);
-    //                }
-    //                var r1 = new Rectangle();
-    //                r1.Fill = ImageInfo.ColorBrush[imageInfo.ImageClass];
-    //                r1.Width = 12;
-    //                r1.Height = 12;
-    //                r1.SetValue(Canvas.LeftProperty, 812);
-    //                r1.SetValue(Canvas.TopProperty, 30);
-    //                canvas.Children.Add(r1);
-    //                var r2 = new Rectangle();
-    //                r2.Fill = ImageInfo.ColorBrush[imageInfo.ClassFromDetail];
-    //                r2.Width = 12;
-    //                r2.Height = 12;
-    //                r2.SetValue(Canvas.LeftProperty, 812);
-    //                r2.SetValue(Canvas.TopProperty, 50);
-    //                canvas.Children.Add(r2);
-    //                var t1 = new TextBlock();
-    //                t1.Text = "Orig value";
-    //                t1.Width = 70;
-    //                t1.SetValue(Canvas.LeftProperty, 830);
-    //                t1.SetValue(Canvas.TopProperty, 25);
-    //                canvas.Children.Add(t1);
-    //                var t2 = new TextBlock();
-    //                t2.Text = "New value";
-    //                t2.Width = 70;
-    //                t2.SetValue(Canvas.LeftProperty, 830);
-    //                t2.SetValue(Canvas.TopProperty, 45);
-    //                canvas.Children.Add(t2);
-    //                Window window = new()
-    //                {
-    //                    Title = imageInfo.Name,
-    //                    Content = canvas
-    //                };
-    //                SetWindowSize(window, 1300, 250);
-    //                window.Activate();
-    //                window.Closed += Window_Closed;
-    //                imageInfo.DetailWindow = window;
-    //            }
   }
 
   void MainWindow::Button_KeyUp(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Input::KeyRoutedEventArgs const& e)

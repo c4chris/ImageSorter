@@ -118,14 +118,14 @@ namespace winrt::ImageSorter::implementation
 
   int32_t ImageFileInfo::ClassFromDetails()
   {
-    //                int[] cnt = new int[4];
-    //                for (int i = 0; i < NbDetailImg; i++)
-    //                {
-    //                    cnt[detail[i]] += 1;
-    //                }
-    //                if (cnt[0] > 0) return 0;
-    //                if (cnt[3] > 0) return 3;
-    //                if (cnt[2] > 0) return 2;
+    int cnt[4] = { 0 };
+    for (int i = 0; i < NbDetailImg; i++)
+    {
+      cnt[m_detail[i]] += 1;
+    }
+    if (cnt[0] > 0) return 0;
+    if (cnt[3] > 0) return 3;
+    if (cnt[2] > 0) return 2;
     return 1;
   }
 
