@@ -34,3 +34,7 @@
 #include <microsoft.ui.xaml.window.h>
 #include <Shobjidl.h>
 #include <winrt/Windows.Storage.Pickers.h>
+
+#include <winrt/Microsoft.UI.Composition.SystemBackdrops.h>
+#include <winrt/Windows.System.h>
+#include <dispatcherqueue.h>
