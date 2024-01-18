@@ -23,6 +23,7 @@ namespace ImageSorter
         Int32 getDetail(UInt32 idx);
         void setDetail(UInt32 idx, Int32 value);
         void NextRect();
+        Windows.Foundation.IAsyncAction rename(String desiredName);
         event Microsoft.UI.Xaml.Data.PropertyChangedEventHandler PropertyChanged;
     }
 

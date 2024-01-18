@@ -6,6 +6,9 @@
 #endif
 #include "ImageFileInfo.h"
 #include <regex>
+#include <iostream>
+#include <sstream>
+#include <iomanip>
 
 //using namespace winrt;
 //using namespace Microsoft::UI::Xaml;
@@ -62,110 +65,108 @@ namespace winrt::ImageSorter::implementation
 
   void MainWindow::Canvas_KeyUp(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Input::KeyRoutedEventArgs const& e)
   {
-    //            var canvas = (Canvas)sender;
-    //            var imageInfo = canvas?.DataContext as ImageInfo;
-    //            if (imageInfo != null)
-    //            {
-    //                if (e.Key == Windows.System.VirtualKey.Tab)
-    //                {
-    //                    imageInfo.NextRect();
-    //                    e.Handled = true;
-    //                    Canvas.SetLeft(canvas.Children[1], imageInfo.RectLeft);
-    //                }
-    //                if (e.Key == Windows.System.VirtualKey.Enter)
-    //                {
-    //                    string start;
-    //                    string pattern = @"_[0-9a-f]{5}\.png$";
-    //                    Match m = Regex.Match(imageInfo.FullName, pattern, RegexOptions.IgnoreCase);
-    //                    if (m.Success)
-    //                    {
-    //                        start = imageInfo.FullName.Substring(0, m.Index);
-    //                    }
-    //                    else
-    //                    {
-    //                        string p2 = @"_[egm]\.png$";
-    //                        Match m2 = Regex.Match(imageInfo.FullName, p2, RegexOptions.IgnoreCase);
-    //                        if (m2.Success)
-    //                        {
-    //                            start = imageInfo.FullName.Substring(0, m2.Index);
-    //                        }
-    //                        else
-    //                        {
-    //                            start = imageInfo.FullName.Substring(0, imageInfo.FullName.Length - 4);
-    //                        }
-    //                    }
-    //                    uint v = 0;
-    //                    for (int i = 0; i < ImageInfo.NbDetailImg; i++)
-    //                    {
-    //                        v <<= 2;
-    //                        v |= imageInfo.detail[i];
-    //                    }
-    //                    string code = $"_{v:x5}";
-    //                    string desiredName = start + code + ".png";
-    //                    File.Move(imageInfo.FullName, desiredName);
-    //                    imageInfo.FullName = desiredName;
-    //                    imageInfo.DetailWindow.Close();
-    //                }
-    //                if (e.Key == Windows.System.VirtualKey.Escape)
-    //                {
-    //                    imageInfo.DetailWindow.Close();
-    //                }
-    //                if (e.Key == Windows.System.VirtualKey.A)
-    //                {
-    //                    imageInfo.detail[imageInfo.RectIdx] = 1;
-    //                    (canvas.Children[imageInfo.RectIdx + 2] as Rectangle).Fill = ImageInfo.ColorBrush[1];
-    //                    (canvas.Children[12] as Rectangle).Fill = ImageInfo.ColorBrush[imageInfo.ClassFromDetail];
-    //                    imageInfo.NextRect();
-    //                    e.Handled = true;
-    //                    Canvas.SetLeft(canvas.Children[1], imageInfo.RectLeft);
-    //                }
-    //                if (e.Key == Windows.System.VirtualKey.E)
-    //                {
-    //                    imageInfo.detail[imageInfo.RectIdx] = 1;
-    //                    (canvas.Children[imageInfo.RectIdx + 2] as Rectangle).Fill = ImageInfo.ColorBrush[1];
-    //                    (canvas.Children[12] as Rectangle).Fill = ImageInfo.ColorBrush[imageInfo.ClassFromDetail];
-    //                    e.Handled = true;
-    //                }
-    //                if (e.Key == Windows.System.VirtualKey.S)
-    //                {
-    //                    imageInfo.detail[imageInfo.RectIdx] = 2;
-    //                    (canvas.Children[imageInfo.RectIdx + 2] as Rectangle).Fill = ImageInfo.ColorBrush[2];
-    //                    (canvas.Children[12] as Rectangle).Fill = ImageInfo.ColorBrush[imageInfo.ClassFromDetail];
-    //                    imageInfo.NextRect();
-    //                    e.Handled = true;
-    //                    Canvas.SetLeft(canvas.Children[1], imageInfo.RectLeft);
-    //                }
-    //                if (e.Key == Windows.System.VirtualKey.G)
-    //                {
-    //                    imageInfo.detail[imageInfo.RectIdx] = 2;
-    //                    (canvas.Children[imageInfo.RectIdx + 2] as Rectangle).Fill = ImageInfo.ColorBrush[2];
-    //                    (canvas.Children[12] as Rectangle).Fill = ImageInfo.ColorBrush[imageInfo.ClassFromDetail];
-    //                    e.Handled = true;
-    //                }
-    //                if (e.Key == Windows.System.VirtualKey.D)
-    //                {
-    //                    imageInfo.detail[imageInfo.RectIdx] = 3;
-    //                    (canvas.Children[imageInfo.RectIdx + 2] as Rectangle).Fill = ImageInfo.ColorBrush[3];
-    //                    (canvas.Children[12] as Rectangle).Fill = ImageInfo.ColorBrush[imageInfo.ClassFromDetail];
-    //                    imageInfo.NextRect();
-    //                    e.Handled = true;
-    //                    Canvas.SetLeft(canvas.Children[1], imageInfo.RectLeft);
-    //                }
-    //                if (e.Key == Windows.System.VirtualKey.M)
-    //                {
-    //                    imageInfo.detail[imageInfo.RectIdx] = 3;
-    //                    (canvas.Children[imageInfo.RectIdx + 2] as Rectangle).Fill = ImageInfo.ColorBrush[3];
-    //                    (canvas.Children[12] as Rectangle).Fill = ImageInfo.ColorBrush[imageInfo.ClassFromDetail];
-    //                    e.Handled = true;
-    //                }
-    //                if (e.Key == Windows.System.VirtualKey.U)
-    //                {
-    //                    imageInfo.detail[imageInfo.RectIdx] = 0;
-    //                    (canvas.Children[imageInfo.RectIdx + 2] as Rectangle).Fill = ImageInfo.ColorBrush[0];
-    //                    (canvas.Children[12] as Rectangle).Fill = ImageInfo.ColorBrush[imageInfo.ClassFromDetail];
-    //                    e.Handled = true;
-    //                }
-    //            }
+    auto canvas = sender.try_as<Canvas>();
+    auto imageInfo = canvas.DataContext().as<ImageSorter::ImageFileInfo>();
+    if (imageInfo == nullptr) return;
+    if (e.Key() == Windows::System::VirtualKey::Tab)
+    {
+      imageInfo.NextRect();
+      e.Handled(true);
+      canvas.SetLeft(canvas.Children().GetAt(1), imageInfo.RectLeft());
+    }
+    if (e.Key() == Windows::System::VirtualKey::Enter)
+    {
+      std::string start;
+      const std::regex base_regex("_[0-9a-f]{5}\\.png$");
+      std::smatch base_match;
+      auto fname = to_string(imageInfo.Path());
+      if (std::regex_search(fname, base_match, base_regex))
+      {
+        start = fname.substr(0, base_match.position());
+      }
+      else
+      {
+        const std::regex r2("_[egm]\\.png$");
+        if (std::regex_search(fname, base_match, r2))
+        {
+          start = fname.substr(0, base_match.position());
+        }
+        else
+        {
+          start = fname.substr(0, fname.length() - 4);
+        }
+      }
+      uint32_t v = 0;
+      for (int i = 0; i < ImageFileInfo::NbDetailImg; i++)
+      {
+        v <<= 2;
+        v |= imageInfo.getDetail(i);
+      }
+      std::ostringstream o;
+      o << std::hex << std::setfill('0') << std::setw(5) << v;
+      //std::string code = std::format("_{:06x}", v);
+      imageInfo.rename(to_hstring(start + o.str() + ".png"));
+      imageInfo.DetailWindow().Close();
+    }
+    if (e.Key() == Windows::System::VirtualKey::Escape)
+    {
+      imageInfo.DetailWindow().Close();
+    }
+    if (e.Key() == Windows::System::VirtualKey::A)
+    {
+      imageInfo.setDetail(imageInfo.RectIdx(), 1);
+      canvas.Children().GetAt(imageInfo.RectIdx() + 2).try_as<Shapes::Rectangle>().Fill(ImageFileInfo::ColorBrush[1]);
+      canvas.Children().GetAt(12).try_as<Shapes::Rectangle>().Fill(ImageFileInfo::ColorBrush[imageInfo.ClassFromDetails()]);
+      imageInfo.NextRect();
+      e.Handled(true);
+      canvas.SetLeft(canvas.Children().GetAt(1), imageInfo.RectLeft());
+    }
+    if (e.Key() == Windows::System::VirtualKey::E)
+    {
+      imageInfo.setDetail(imageInfo.RectIdx(), 1);
+      canvas.Children().GetAt(imageInfo.RectIdx() + 2).try_as<Shapes::Rectangle>().Fill(ImageFileInfo::ColorBrush[1]);
+      canvas.Children().GetAt(12).try_as<Shapes::Rectangle>().Fill(ImageFileInfo::ColorBrush[imageInfo.ClassFromDetails()]);
+      e.Handled(true);
+    }
+    if (e.Key() == Windows::System::VirtualKey::S)
+    {
+      imageInfo.setDetail(imageInfo.RectIdx(), 2);
+      canvas.Children().GetAt(imageInfo.RectIdx() + 2).try_as<Shapes::Rectangle>().Fill(ImageFileInfo::ColorBrush[2]);
+      canvas.Children().GetAt(12).try_as<Shapes::Rectangle>().Fill(ImageFileInfo::ColorBrush[imageInfo.ClassFromDetails()]);
+      imageInfo.NextRect();
+      e.Handled(true);
+      canvas.SetLeft(canvas.Children().GetAt(1), imageInfo.RectLeft());
+    }
+    if (e.Key() == Windows::System::VirtualKey::G)
+    {
+      imageInfo.setDetail(imageInfo.RectIdx(), 2);
+      canvas.Children().GetAt(imageInfo.RectIdx() + 2).try_as<Shapes::Rectangle>().Fill(ImageFileInfo::ColorBrush[2]);
+      canvas.Children().GetAt(12).try_as<Shapes::Rectangle>().Fill(ImageFileInfo::ColorBrush[imageInfo.ClassFromDetails()]);
+      e.Handled(true);
+    }
+    if (e.Key() == Windows::System::VirtualKey::D)
+    {
+      imageInfo.setDetail(imageInfo.RectIdx(), 3);
+      canvas.Children().GetAt(imageInfo.RectIdx() + 2).try_as<Shapes::Rectangle>().Fill(ImageFileInfo::ColorBrush[3]);
+      canvas.Children().GetAt(12).try_as<Shapes::Rectangle>().Fill(ImageFileInfo::ColorBrush[imageInfo.ClassFromDetails()]);
+      imageInfo.NextRect();
+      e.Handled(true);
+      canvas.SetLeft(canvas.Children().GetAt(1), imageInfo.RectLeft());
+    }
+    if (e.Key() == Windows::System::VirtualKey::M)
+    {
+      imageInfo.setDetail(imageInfo.RectIdx(), 3);
+      canvas.Children().GetAt(imageInfo.RectIdx() + 2).try_as<Shapes::Rectangle>().Fill(ImageFileInfo::ColorBrush[3]);
+      canvas.Children().GetAt(12).try_as<Shapes::Rectangle>().Fill(ImageFileInfo::ColorBrush[imageInfo.ClassFromDetails()]);
+      e.Handled(true);
+    }
+    if (e.Key() == Windows::System::VirtualKey::U)
+    {
+      imageInfo.setDetail(imageInfo.RectIdx(), 0);
+      canvas.Children().GetAt(imageInfo.RectIdx() + 2).try_as<Shapes::Rectangle>().Fill(ImageFileInfo::ColorBrush[0]);
+      canvas.Children().GetAt(12).try_as<Shapes::Rectangle>().Fill(ImageFileInfo::ColorBrush[imageInfo.ClassFromDetails()]);
+      e.Handled(true);
+    }
   }
 
   void MainWindow::Window_Closed(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::WindowEventArgs const& args)

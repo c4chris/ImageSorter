@@ -99,10 +99,7 @@ namespace winrt::ImageSorter::implementation
       break;
     }
     hstring desiredName = to_hstring(start + code + ".png");
-    co_await m_file.RenameAsync(desiredName, NameCollisionOption::GenerateUniqueName);
-    OnPropertyChanged(L"Class");
-    OnPropertyChanged(L"Path");
-    OnPropertyChanged(L"Name");
+    rename(desiredName);
   }
 
   hstring ImageFileInfo::ClassColor()
@@ -152,6 +149,15 @@ namespace winrt::ImageSorter::implementation
     auto next = RectIdx() + 1;
     if (next >= NbDetailImg) next = 0;
     RectIdx(next);
+  }
+
+  Windows::Foundation::IAsyncAction ImageFileInfo::rename(hstring desiredName)
+  {
+    if (m_file.Path() == desiredName) co_return;
+    co_await m_file.RenameAsync(desiredName, NameCollisionOption::GenerateUniqueName);
+    OnPropertyChanged(L"Class");
+    OnPropertyChanged(L"Path");
+    OnPropertyChanged(L"Name");
   }
 
   /*IAsyncOperation<BitmapImage> ImageFileInfo::GetImageSourceAsync()

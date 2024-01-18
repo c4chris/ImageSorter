@@ -80,6 +80,8 @@ namespace winrt::ImageSorter::implementation
       m_detail[idx] = value;
     }
 
+    Windows::Foundation::IAsyncAction rename(hstring desiredName);
+
     static const uint32_t NbDetailImg = 9;
     static Microsoft::UI::Xaml::Media::Brush ColorBrush[5];
 
