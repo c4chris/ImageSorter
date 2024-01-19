@@ -153,7 +153,7 @@ namespace winrt::ImageSorter::implementation
   {
     if (m_file.Path() == desiredName) co_return;
 #ifdef _DEBUG
-    std : string s = "### --- trying to rename " + to_string(m_file.Path()) + " to " + to_string(desiredName) + "\n";
+    std::string s = "### --- trying to rename " + to_string(m_file.Path()) + " to " + to_string(desiredName) + "\n";
     OutputDebugStringA(s.c_str());
 #endif
     co_await m_file.RenameAsync(desiredName, NameCollisionOption::GenerateUniqueName);

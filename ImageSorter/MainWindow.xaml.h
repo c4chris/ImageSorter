@@ -2,6 +2,7 @@
 #pragma once
 
 #include "MainWindow.g.h"
+#include <filesystem>
 
 namespace winrt
 {
@@ -37,8 +38,11 @@ namespace winrt::ImageSorter::implementation
           }
         });
 
-      //GetItemsAsync();
-      hstring folderPath = Windows::ApplicationModel::Package::Current().InstalledPath() + L"\\Assets\\Images";
+      auto installedPath = Windows::ApplicationModel::Package::Current().InstalledPath() + L"\\Assets\\Images";
+      auto folderPath = std::filesystem::temp_directory_path() + L"IS_Images_scratch";
+      std::error_code ec;
+      std::filesystem::remove_all(to_string(folderPath), ec);
+      std::filesystem::copy(to_string(installedPath), to_string(folderPath), ec);
       LoadImages(folderPath);
     }
 
