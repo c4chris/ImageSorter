@@ -7,22 +7,14 @@ namespace ImageSorter
     runtimeclass MainWindow : Microsoft.UI.Xaml.Window
     {
         MainWindow();
-//        Windows.Foundation.Collections.IVector<IInspectable> Images{ get; };
         Microsoft.UI.Dispatching.DispatcherQueue UIQueue{ get; };
         ImagesRepository ImagesRepository { get; };
         Windows.Foundation.IAsyncAction LoadImages(String folderPath);
         Windows.Foundation.IAsyncAction AppBarButton_Click(Object sender, Microsoft.UI.Xaml.RoutedEventArgs e);
-        Windows.Foundation.IAsyncAction Button_Click(Object sender, Microsoft.UI.Xaml.RoutedEventArgs e);
+        void Button_Click(Object sender, Microsoft.UI.Xaml.RoutedEventArgs e);
         void Button_PointerEntered(Object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e);
         void Button_PointerExited(Object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e);
         void Canvas_KeyUp(Object sender, Microsoft.UI.Xaml.Input.KeyRoutedEventArgs e);
         void Window_Closed(Object sender, Microsoft.UI.Xaml.WindowEventArgs args);
-//        async void AppBarButton_Click(object sender, RoutedEventArgs e);
-//        void Button_Click(object sender, RoutedEventArgs e);
-//        void Window_Closed(object sender, WindowEventArgs args);
-//        static void SetWindowSize(Window window, int width, int height);
-//        async void AppBarButton_Click_1(object sender, RoutedEventArgs e);
-//        void Btn_KeyUp(object sender, KeyRoutedEventArgs e);
-//        void Canvas_KeyUp(object sender, KeyRoutedEventArgs e);
     }
 }

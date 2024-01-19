@@ -10,8 +10,6 @@
 #include <sstream>
 #include <iomanip>
 
-//using namespace winrt;
-//using namespace Microsoft::UI::Xaml;
 namespace winrt
 {
   using namespace Windows::ApplicationModel;
@@ -79,7 +77,7 @@ namespace winrt::ImageSorter::implementation
       std::string start;
       const std::regex base_regex("_[0-9a-f]{5}\\.png$");
       std::smatch base_match;
-      auto fname = to_string(imageInfo.Path());
+      auto fname = to_string(imageInfo.Name());
       if (std::regex_search(fname, base_match, base_regex))
       {
         start = fname.substr(0, base_match.position());
@@ -105,7 +103,7 @@ namespace winrt::ImageSorter::implementation
       std::ostringstream o;
       o << std::hex << std::setfill('0') << std::setw(5) << v;
       //std::string code = std::format("_{:06x}", v);
-      imageInfo.rename(to_hstring(start + o.str() + ".png"));
+      imageInfo.rename(to_hstring(start + "_" + o.str() + ".png"));
       imageInfo.DetailWindow().Close();
     }
     if (e.Key() == Windows::System::VirtualKey::Escape)
@@ -195,14 +193,14 @@ namespace winrt::ImageSorter::implementation
     }
   }
 
-  IAsyncAction MainWindow::Button_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e)
+  void MainWindow::Button_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e)
   {
     auto imageInfo = sender.try_as<Button>().DataContext().as<ImageSorter::ImageFileInfo>();
-    if (imageInfo == nullptr) co_return;
+    if (imageInfo == nullptr) return;
     if (imageInfo.DetailWindow() != nullptr)
     {
       imageInfo.DetailWindow().Activate();
-      co_return;
+      return;
     }
     // initialize the details if we already have some info
     const std::regex base_regex("_[0-9a-f]{5}\\.png$");
@@ -294,39 +292,35 @@ namespace winrt::ImageSorter::implementation
 
   void MainWindow::Button_KeyUp(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Input::KeyRoutedEventArgs const& e)
   {
-    //var imageInfo = (sender as Button) ? .DataContext as ImageInfo;
-    //            if (imageInfo != null)
-    //            {
-    //                var options = new FindNextElementOptions()
-    //                {
-    //                    SearchRoot = ImageScrollViewer,
-    //                    XYFocusNavigationStrategyOverride = XYFocusNavigationStrategyOverride.Projection
-    //                };
-    //                DependencyObject candidate = null;
-    //                if (e.Key == Windows.System.VirtualKey.A)
-    //                {
-    //                    imageInfo.ImageClass = 1;
-    //                    candidate = FocusManager.FindNextElement(FocusNavigationDirection.Down, options);
-    //                }
-    //                if (e.Key == Windows.System.VirtualKey.E) { imageInfo.ImageClass = 1; }
-    //                if (e.Key == Windows.System.VirtualKey.S)
-    //                {
-    //                    imageInfo.ImageClass = 2;
-    //                    candidate = FocusManager.FindNextElement(FocusNavigationDirection.Down, options);
-    //                }
-    //                if (e.Key == Windows.System.VirtualKey.G) { imageInfo.ImageClass = 2; }
-    //                if (e.Key == Windows.System.VirtualKey.D)
-    //                {
-    //                    imageInfo.ImageClass = 3;
-    //                    candidate = FocusManager.FindNextElement(FocusNavigationDirection.Down, options);
-    //                }
-    //                if (e.Key == Windows.System.VirtualKey.M) { imageInfo.ImageClass = 3; }
-    //                if (e.Key == Windows.System.VirtualKey.U) { imageInfo.ImageClass = 0; }
-    //                if (candidate != null && candidate is Control)
-    //                {
-    //                    (candidate as Control).Focus(FocusState.Keyboard);
-    //                }
-    //            }
+    auto imageInfo = sender.try_as<Button>().DataContext().as<ImageSorter::ImageFileInfo>();
+    if (imageInfo == nullptr) return;
+    auto options = Input::FindNextElementOptions::FindNextElementOptions();
+    options.SearchRoot(ImageScrollViewer());
+    options.XYFocusNavigationStrategyOverride(Input::XYFocusNavigationStrategyOverride::Projection);
+    DependencyObject candidate{ nullptr };
+    if (e.Key() == Windows::System::VirtualKey::A)
+    {
+      imageInfo.Class(1);
+      candidate = Input::FocusManager::FindNextElement(Input::FocusNavigationDirection::Down, options);
+    }
+    if (e.Key() == Windows::System::VirtualKey::E) { imageInfo.Class(1); }
+    if (e.Key() == Windows::System::VirtualKey::S)
+    {
+      imageInfo.Class(2);
+      candidate = Input::FocusManager::FindNextElement(Input::FocusNavigationDirection::Down, options);
+    }
+    if (e.Key() == Windows::System::VirtualKey::G) { imageInfo.Class(2); }
+    if (e.Key() == Windows::System::VirtualKey::D)
+    {
+      imageInfo.Class(3);
+      candidate = Input::FocusManager::FindNextElement(Input::FocusNavigationDirection::Down, options);
+    }
+    if (e.Key() == Windows::System::VirtualKey::M) { imageInfo.Class(3); }
+    if (e.Key() == Windows::System::VirtualKey::U) { imageInfo.Class(0); }
+    if (Control theControl{ candidate.try_as<Control>() })
+    {
+      theControl.Focus(FocusState::Keyboard);
+    }
   }
 
   void MainWindow::AppBarButton_Click_1(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e)

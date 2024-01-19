@@ -1,13 +1,6 @@
 // ImageFileInfo.idl
 namespace ImageSorter
 {
-  enum ImageClassValue {
-      Unclassified = 0,
-      Empty = 1,
-      Good = 2,
-      Mixed = 3
-  };
-
     [Microsoft.UI.Xaml.Data.Bindable]
     runtimeclass ImageFileInfo : Microsoft.UI.Xaml.Data.INotifyPropertyChanged
     {
@@ -33,34 +26,4 @@ namespace ImageSorter
         Windows.Foundation.Collections.IObservableVector<ImageSorter.ImageFileInfo> Images{ get; };
         Windows.Foundation.IAsyncAction GetImages(String folderPath, Microsoft.UI.Dispatching.DispatcherQueue queue);
     }
-//        public ImageInfo(string fullName, string name)
-//        public string Name { get; set; };
-//        public string FullName { get; set; };
-//        public int ImageClass { get; set; };
-//        public string ImageClassColor { get; };
-//        public int ClassFromDetail { get; };
-//        public int RectIdx { get; set; };
-//        public void NextRect ();
-//        public int RectLeft { get; };
-//        public event PropertyChangedEventHandler PropertyChanged;
-//        protected virtual void OnPropertyChanged(string propertyName);
-//        private int rectIdx = 0;
-//        public static SolidColorBrush[] ColorBrush = {
-//            new SolidColorBrush(Colors.Gold),
-//            new SolidColorBrush(Colors.White),
-//            new SolidColorBrush(Colors.SpringGreen),
-//            new SolidColorBrush(Colors.Red),
-//            new SolidColorBrush(Colors.Blue),
-//        };
-//        private Window detailWindow = null;
-//        public Window DetailWindow { get; set; };
-//        public uint[] detail;
-//        private string fullName;
-//        public const uint NbDetailImg = 9;
-
-//    runtimeclass ImagesRepository : Microsoft.UI.Xaml.Data.INotifyPropertyChanged
-//    {
-//        public ObservableCollection<ImageInfo> Images;
-//        public void GetImages(string folderPath);
-//    }
 }

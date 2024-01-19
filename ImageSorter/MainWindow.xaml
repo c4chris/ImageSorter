@@ -39,7 +39,6 @@
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <!-- <Button Click="Button_Click"  BorderBrush="{x:Bind ImageClassColor, Mode=OneWay}" FocusVisualPrimaryBrush="{x:Bind ImageClassColor, Mode=OneWay}" DataContext="{x:Bind}" KeyUp="Button_KeyUp"  PointerEntered="element_PointerEntered" PointerExited="element_PointerExited" Grid.Column="0"> -->
                         <Button Click="Button_Click"  BorderBrush="{x:Bind ClassColor, Mode=OneWay}" FocusVisualPrimaryBrush="{x:Bind ClassColor, Mode=OneWay}" DataContext="{x:Bind}" KeyUp="Button_KeyUp" PointerEntered="Button_PointerEntered" PointerExited="Button_PointerExited" Grid.Column="0">
                             <Image Source="{x:Bind Path}" MaxHeight="192" MaxWidth="1600" />
                         </Button>

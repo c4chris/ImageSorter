@@ -61,28 +61,28 @@ namespace winrt::ImageSorter::implementation
     return 0;
   }
 
-  Windows::Foundation::IAsyncAction ImageFileInfo::Class(int32_t value)
+  void ImageFileInfo::Class(int32_t value)
   {
-    if (value < 0 || value > 3) co_return;
-    if (value == Class()) co_return;
-    if (m_file.Path().size() <= 10) co_return;
-    auto sPath = to_string(m_file.Path());
-    auto end = sPath.substr(sPath.length() - 6);
+    if (value < 0 || value > 3) return;
+    if (value == Class()) return;
+    if (m_file.Path().size() <= 10) return;
+    auto sName = to_string(m_file.Name());
+    auto end = sName.substr(sName.length() - 6);
     std::string start;
     if (end[0] == '_')
     {
-      start = sPath.substr(0, sPath.length() - 6);
+      start = sName.substr(0, sName.length() - 6);
     }
     else
     {
-      end = sPath.substr(sPath.length() - 10);
+      end = sName.substr(sName.length() - 10);
       if (end[0] == '_')
       {
-        start = sPath.substr(0, sPath.length() - 10);
+        start = sName.substr(0, sName.length() - 10);
       }
       else
       {
-        start = sPath.substr(0, sPath.length() - 4);
+        start = sName.substr(0, sName.length() - 4);
       }
     }
     std::string code = "";
@@ -133,10 +133,8 @@ namespace winrt::ImageSorter::implementation
 
   void ImageFileInfo::RectIdx(int32_t value)
   {
-    //Debug.WriteLine($"Rect moved from {rectLeft}");
     m_rectIdx = value;
     OnPropertyChanged(L"RectIdx");
-    //Debug.WriteLine($"Rect moved to {rectLeft}");
   }
 
   int32_t ImageFileInfo::RectLeft()
@@ -154,20 +152,16 @@ namespace winrt::ImageSorter::implementation
   Windows::Foundation::IAsyncAction ImageFileInfo::rename(hstring desiredName)
   {
     if (m_file.Path() == desiredName) co_return;
+#ifdef _DEBUG
+    std : string s = "### --- trying to rename " + to_string(m_file.Path()) + " to " + to_string(desiredName) + "\n";
+    OutputDebugStringA(s.c_str());
+#endif
     co_await m_file.RenameAsync(desiredName, NameCollisionOption::GenerateUniqueName);
     OnPropertyChanged(L"Class");
+    OnPropertyChanged(L"ClassColor");
     OnPropertyChanged(L"Path");
     OnPropertyChanged(L"Name");
   }
-
-  /*IAsyncOperation<BitmapImage> ImageFileInfo::GetImageSourceAsync()
-  {
-    IRandomAccessStream stream{ co_await ImageFile().OpenAsync(FileAccessMode::Read) };
-    BitmapImage bitmap{};
-    co_await bitmap.SetSourceAsync(stream);
-    stream.Close();
-    co_return bitmap;
-  }*/
 
   IAsyncAction ImagesRepository::GetImages(hstring const& folderPath, Microsoft::UI::Dispatching::DispatcherQueue queue)
   {
@@ -210,59 +204,4 @@ namespace winrt::ImageSorter::implementation
       m_images.Append(ImageSorter::ImageFileInfo(file));
     }
   }
-//    public class ImageInfo : INotifyPropertyChanged
-//    {
-//        public ImageInfo(string fullName, string name)
-//        {
-//            FullName = fullName;
-//            Name = name;
-//            detail = new uint[NbDetailImg];
-//        }
-//        public string Name { get; set; }
-//        public string FullName
-//        {
-//            get { return fullName; }
-//            set
-//            {
-//                if (value != fullName)
-//                {
-//                    fullName = value;
-//                    OnPropertyChanged("FullName");
-//                    OnPropertyChanged(nameof(ImageClass));
-//                    OnPropertyChanged(nameof(ImageClassColor));
-//                }
-//            }
-//        }
-//        public event PropertyChangedEventHandler PropertyChanged;
-//        protected virtual void OnPropertyChanged(string propertyName)
-//        {
-//            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-//        }
-//        private int rectIdx = 0;
-//        public static SolidColorBrush[] ColorBrush = {
-//            new SolidColorBrush(Colors.Gold),
-//            new SolidColorBrush(Colors.White),
-//            new SolidColorBrush(Colors.SpringGreen),
-//            new SolidColorBrush(Colors.Red),
-//            new SolidColorBrush(Colors.Blue),
-//        };
-//        private Window detailWindow = null;
-//        public Window DetailWindow
-//        {
-//            get { return detailWindow; }
-//            set {
-//                detailWindow = value;
-//                OnPropertyChanged(nameof(DetailWindow));
-//            }
-//        }
-//        public uint[] detail;
-//        private string fullName;
-//        public const uint NbDetailImg = 9;
-//    }
-//
-//    public class ImagesRepository
-//    {
-//        public ObservableCollection<ImageInfo> Images;
-//
-
 }
