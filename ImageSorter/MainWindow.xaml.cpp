@@ -193,6 +193,21 @@ namespace winrt::ImageSorter::implementation
     }
   }
 
+  IAsyncAction MainWindow::AppBarButton_Click_1(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e)
+  {
+    ContentDialog dialog = ContentDialog();
+
+    // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
+    dialog.XamlRoot(sender.try_as<Button>().XamlRoot());
+    dialog.Style(Application::Current().Resources().Lookup(box_value(L"DefaultContentDialogStyle")).try_as<Style>());
+    dialog.Title(box_value(L"Image Sorter"));
+    dialog.CloseButtonText(L"Close");
+    dialog.DefaultButton(ContentDialogButton::Primary);
+    dialog.Content(box_value(L"Some interesting text"));
+
+    auto result = co_await dialog.ShowAsync();
+  }
+
   void MainWindow::Button_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e)
   {
     auto imageInfo = sender.try_as<Button>().DataContext().as<ImageSorter::ImageFileInfo>();
@@ -321,20 +336,5 @@ namespace winrt::ImageSorter::implementation
     {
       theControl.Focus(FocusState::Keyboard);
     }
-  }
-
-  void MainWindow::AppBarButton_Click_1(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e)
-  {
-    //            ContentDialog dialog = new ContentDialog();
-    //
-    //            // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
-    //            dialog.XamlRoot = (sender as Button).XamlRoot;
-    //            dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
-    //            dialog.Title = "Image Sorter";
-    //            dialog.CloseButtonText = "Close";
-    //            dialog.DefaultButton = ContentDialogButton.Primary;
-    //            dialog.Content = "Some interesting text";
-    //
-    //            var result = await dialog.ShowAsync();
   }
 }

@@ -39,10 +39,12 @@ namespace winrt::ImageSorter::implementation
         });
 
       auto installedPath = Windows::ApplicationModel::Package::Current().InstalledPath() + L"\\Assets\\Images";
+      //auto scratchSpacePath = Windows::Storage::ApplicationData::Current().TemporaryFolder().Path();
       auto folderPath = std::filesystem::temp_directory_path() + L"IS_Images_scratch";
       std::error_code ec;
       std::filesystem::remove_all(to_string(folderPath), ec);
       std::filesystem::copy(to_string(installedPath), to_string(folderPath), ec);
+      //std::filesystem::copy(to_string(installedPath), to_string(scratchSpacePath), std::filesystem::copy_options::recursive, ec);
       LoadImages(folderPath);
     }
 
@@ -56,11 +58,13 @@ namespace winrt::ImageSorter::implementation
 
     Windows::Foundation::IAsyncAction MainWindow::LoadImages(hstring folderPath);
     Windows::Foundation::IAsyncAction AppBarButton_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
+    Windows::Foundation::IAsyncAction AppBarButton_Click_1(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
     void Button_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
     void Button_PointerEntered(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Input::PointerRoutedEventArgs const& e);
     void Button_PointerExited(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Input::PointerRoutedEventArgs const& e);
     void Canvas_KeyUp(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Input::KeyRoutedEventArgs const& e);
     void Window_Closed(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::WindowEventArgs const& args);
+    void Button_KeyUp(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Input::KeyRoutedEventArgs const& e);
 
     ImageSorter::ImagesRepository ImagesRepository()
     {
@@ -165,10 +169,6 @@ namespace winrt::ImageSorter::implementation
     Microsoft::UI::Composition::SpringVector3NaturalMotionAnimation _springAnimation{ nullptr };
 
     void MainWindow::CreateOrUpdateSpringAnimation(float finalValue);
-
-  public:
-    void Button_KeyUp(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Input::KeyRoutedEventArgs const& e);
-    void AppBarButton_Click_1(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
   };
 }
 

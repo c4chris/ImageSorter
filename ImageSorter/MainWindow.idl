@@ -11,9 +11,11 @@ namespace ImageSorter
         ImagesRepository ImagesRepository { get; };
         Windows.Foundation.IAsyncAction LoadImages(String folderPath);
         Windows.Foundation.IAsyncAction AppBarButton_Click(Object sender, Microsoft.UI.Xaml.RoutedEventArgs e);
+        Windows.Foundation.IAsyncAction AppBarButton_Click_1(Object sender, Microsoft.UI.Xaml.RoutedEventArgs e);
         void Button_Click(Object sender, Microsoft.UI.Xaml.RoutedEventArgs e);
         void Button_PointerEntered(Object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e);
         void Button_PointerExited(Object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e);
+        void Button_KeyUp(Object sender, Microsoft.UI.Xaml.Input.KeyRoutedEventArgs e);
         void Canvas_KeyUp(Object sender, Microsoft.UI.Xaml.Input.KeyRoutedEventArgs e);
         void Window_Closed(Object sender, Microsoft.UI.Xaml.WindowEventArgs args);
     }
