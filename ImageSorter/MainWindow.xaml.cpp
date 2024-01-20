@@ -29,25 +29,13 @@ namespace winrt::ImageSorter::implementation
   IAsyncAction MainWindow::LoadImages(hstring folderPath)
   {
     co_await ImagesRepository().GetImages(folderPath, this->DispatcherQueue());
-    auto numImages = ImagesRepository().Images().Size();
     //ImageInfoBar().Message(to_hstring(numImages) + L" have loaded from " + folderPath);
     //ImageInfoBar().IsOpen(true);
     //auto dispatcherQueue = winrt::Windows::System::DispatcherQueue::GetForCurrentThread();
-    if (this->DispatcherQueue().HasThreadAccess())
-    {
-      ImageInfoBar().Message(to_hstring(numImages) + L" have loaded from " + folderPath);
-      ImageInfoBar().IsOpen(true);
-    }
-    else
-    {
-      bool isQueued = this->DispatcherQueue().TryEnqueue(
-        Microsoft::UI::Dispatching::DispatcherQueuePriority::Normal,
-        [numImages, folderPath, this]()
-        {
-          ImageInfoBar().Message(to_hstring(numImages) + L" have loaded from " + folderPath);
-          ImageInfoBar().IsOpen(true);
-        });
-    }
+    co_await wil::resume_foreground(this->DispatcherQueue());
+    auto numImages = ImagesRepository().Images().Size();
+    ImageInfoBar().Message(to_hstring(numImages) + L" have loaded from " + folderPath);
+    ImageInfoBar().IsOpen(true);
   }
 
   void MainWindow::CreateOrUpdateSpringAnimation(float finalValue)
@@ -205,7 +193,9 @@ namespace winrt::ImageSorter::implementation
     folder = co_await folderPicker.PickSingleFolderAsync();
     if (folder != nullptr)
     {
-      LoadImages(folder.Path());
+      co_await wil::resume_foreground(this->DispatcherQueue());
+      ImagesRepository().ClearImages();
+      co_await LoadImages(folder.Path());
     }
   }
 

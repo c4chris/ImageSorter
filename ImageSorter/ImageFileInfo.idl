@@ -20,10 +20,12 @@ namespace ImageSorter
         event Microsoft.UI.Xaml.Data.PropertyChangedEventHandler PropertyChanged;
     }
 
-    runtimeclass ImagesRepository
+    runtimeclass ImagesRepository : Microsoft.UI.Xaml.Data.INotifyPropertyChanged
     {
         ImagesRepository();
         Windows.Foundation.Collections.IObservableVector<ImageSorter.ImageFileInfo> Images{ get; };
         Windows.Foundation.IAsyncAction GetImages(String folderPath, Microsoft.UI.Dispatching.DispatcherQueue queue);
+        void ClearImages();
+        event Microsoft.UI.Xaml.Data.PropertyChangedEventHandler PropertyChanged;
     }
 }

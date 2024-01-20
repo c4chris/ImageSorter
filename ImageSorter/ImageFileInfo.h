@@ -52,31 +52,49 @@ namespace winrt::ImageSorter::implementation
 
     Microsoft::UI::Xaml::Window DetailWindow()
     {
+#ifdef _DEBUG
+      OutputDebugStringA("\n\n########## - Entering get method " __FUNCTION__ "\n\n");
+#endif
       return m_detailWindow;
     }
 
     void DetailWindow(Microsoft::UI::Xaml::Window value)
     {
+#ifdef _DEBUG
+      OutputDebugStringA("\n\n########## - Entering set method " __FUNCTION__ "\n\n");
+#endif
       m_detailWindow = value;
     }
 
     winrt::event_token PropertyChanged(winrt::Microsoft::UI::Xaml::Data::PropertyChangedEventHandler const& handler)
     {
+#ifdef _DEBUG
+      OutputDebugStringA("\n\n########## - Entering add handler " __FUNCTION__ "\n\n");
+#endif
       return m_propertyChanged.add(handler);
     }
 
     void PropertyChanged(winrt::event_token const& token) noexcept
     {
+#ifdef _DEBUG
+      OutputDebugStringA("\n\n########## - Entering remove token " __FUNCTION__ "\n\n");
+#endif
       m_propertyChanged.remove(token);
     }
 
     int32_t getDetail(uint32_t idx)
     {
+#ifdef _DEBUG
+      OutputDebugStringA("\n\n########## - Entering get method " __FUNCTION__ "\n\n");
+#endif
       return m_detail[idx];
     }
 
     void setDetail(uint32_t idx, int32_t value)
     {
+#ifdef _DEBUG
+      OutputDebugStringA("\n\n########## - Entering set method " __FUNCTION__ "\n\n");
+#endif
       m_detail[idx] = value;
     }
 
@@ -94,6 +112,9 @@ namespace winrt::ImageSorter::implementation
     event<Microsoft::UI::Xaml::Data::PropertyChangedEventHandler> m_propertyChanged;
     void OnPropertyChanged(hstring propertyName)
     {
+#ifdef _DEBUG
+      OutputDebugStringA("\n\n########## - Entering method " __FUNCTION__ "\n\n");
+#endif
       m_propertyChanged(*this, Microsoft::UI::Xaml::Data::PropertyChangedEventArgs(propertyName));
     }
   };
@@ -112,18 +133,33 @@ namespace winrt::ImageSorter::implementation
 
     Windows::Foundation::Collections::IObservableVector<ImageSorter::ImageFileInfo> Images()
     {
+#ifdef _DEBUG
+      OutputDebugStringA("\n\n########## - Entering get method " __FUNCTION__ "\n\n");
+#endif
       return m_images;
+    }
+
+    void ImagesRepository::ClearImages()
+    {
+      m_images.Clear();
+      OnPropertyChanged(L"Images");
     }
 
     Windows::Foundation::IAsyncAction ImagesRepository::GetImages(hstring const& folderPath, Microsoft::UI::Dispatching::DispatcherQueue queue);
 
     winrt::event_token PropertyChanged(winrt::Microsoft::UI::Xaml::Data::PropertyChangedEventHandler const& handler)
     {
+#ifdef _DEBUG
+      OutputDebugStringA("\n\n########## - Entering add handler " __FUNCTION__ "\n\n");
+#endif
       return m_propertyChanged.add(handler);
     }
 
     void PropertyChanged(winrt::event_token const& token) noexcept
     {
+#ifdef _DEBUG
+      OutputDebugStringA("\n\n########## - Entering remove token " __FUNCTION__ "\n\n");
+#endif
       m_propertyChanged.remove(token);
     }
 
@@ -132,6 +168,9 @@ namespace winrt::ImageSorter::implementation
     Windows::Foundation::Collections::IObservableVector<ImageSorter::ImageFileInfo> m_images{ nullptr };
     void OnPropertyChanged(hstring propertyName)
     {
+#ifdef _DEBUG
+      OutputDebugStringA("\n\n########## - Entering method " __FUNCTION__ "\n\n");
+#endif
       m_propertyChanged(*this, Microsoft::UI::Xaml::Data::PropertyChangedEventArgs(propertyName));
     }
   };
