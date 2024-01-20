@@ -28,10 +28,26 @@ namespace winrt::ImageSorter::implementation
 {
   IAsyncAction MainWindow::LoadImages(hstring folderPath)
   {
-    co_await ImagesRepository().GetImages(folderPath, UIQueue());
+    co_await ImagesRepository().GetImages(folderPath, this->DispatcherQueue());
     auto numImages = ImagesRepository().Images().Size();
-    ImageInfoBar().Message(to_hstring(numImages) + L" have loaded from " + folderPath);
-    ImageInfoBar().IsOpen(true);
+    //ImageInfoBar().Message(to_hstring(numImages) + L" have loaded from " + folderPath);
+    //ImageInfoBar().IsOpen(true);
+    //auto dispatcherQueue = winrt::Windows::System::DispatcherQueue::GetForCurrentThread();
+    if (this->DispatcherQueue().HasThreadAccess())
+    {
+      ImageInfoBar().Message(to_hstring(numImages) + L" have loaded from " + folderPath);
+      ImageInfoBar().IsOpen(true);
+    }
+    else
+    {
+      bool isQueued = this->DispatcherQueue().TryEnqueue(
+        Microsoft::UI::Dispatching::DispatcherQueuePriority::Normal,
+        [numImages, folderPath, this]()
+        {
+          ImageInfoBar().Message(to_hstring(numImages) + L" have loaded from " + folderPath);
+          ImageInfoBar().IsOpen(true);
+        });
+    }
   }
 
   void MainWindow::CreateOrUpdateSpringAnimation(float finalValue)

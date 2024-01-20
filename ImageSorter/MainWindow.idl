@@ -7,7 +7,6 @@ namespace ImageSorter
     runtimeclass MainWindow : Microsoft.UI.Xaml.Window
     {
         MainWindow();
-        Microsoft.UI.Dispatching.DispatcherQueue UIQueue{ get; };
         ImagesRepository ImagesRepository { get; };
         Windows.Foundation.IAsyncAction LoadImages(String folderPath);
         Windows.Foundation.IAsyncAction AppBarButton_Click(Object sender, Microsoft.UI.Xaml.RoutedEventArgs e);

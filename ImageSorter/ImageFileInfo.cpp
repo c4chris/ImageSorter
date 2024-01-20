@@ -167,7 +167,7 @@ namespace winrt::ImageSorter::implementation
   {
     OutputDebugStringA("\n\n=== Trying to get images\n");
     auto fp{ folderPath }; // try to get a local copy of the thing
-    auto q{ queue };
+    auto dispatcherQueue{ queue };
     co_await winrt::resume_background();
     std::string l1 = "=== GetFolderFromPathAsync " + to_string(fp) + "\n\n";
     OutputDebugStringA(l1.c_str());
@@ -195,13 +195,30 @@ namespace winrt::ImageSorter::implementation
     Collections::IVectorView<StorageFile> imageFiles = co_await result.GetFilesAsync();
     OutputDebugStringA("\n\n=== Got the list of files\n");
     // I think we need to go back on the UI thread now...
-    co_await wil::resume_foreground(q);
-    m_images.Clear();
-    for (auto&& file : imageFiles)
+    if (dispatcherQueue.HasThreadAccess())
     {
-      std::string line = "*** Would load image " + to_string(file.Name()) + " from " + to_string(file.Path()) + "\n";
-      OutputDebugStringA(line.c_str());
-      m_images.Append(ImageSorter::ImageFileInfo(file));
+      m_images.Clear();
+      for (auto&& file : imageFiles)
+      {
+        std::string line = "*** Would load image " + to_string(file.Name()) + " from " + to_string(file.Path()) + "\n";
+        OutputDebugStringA(line.c_str());
+        m_images.Append(ImageSorter::ImageFileInfo(file));
+      }
+    }
+    else
+    {
+      bool isQueued = dispatcherQueue.TryEnqueue(
+        Microsoft::UI::Dispatching::DispatcherQueuePriority::Normal,
+        [imageFiles, this]()
+        {
+          m_images.Clear();
+          for (auto&& file : imageFiles)
+          {
+            std::string line = "*** Would load image " + to_string(file.Name()) + " from " + to_string(file.Path()) + "\n";
+            OutputDebugStringA(line.c_str());
+            m_images.Append(ImageSorter::ImageFileInfo(file));
+          }
+        });
     }
   }
 }

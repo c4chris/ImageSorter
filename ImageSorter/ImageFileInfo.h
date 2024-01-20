@@ -115,7 +115,7 @@ namespace winrt::ImageSorter::implementation
       return m_images;
     }
 
-    Windows::Foundation::IAsyncAction ImagesRepository::GetImages(hstring const& folder, Microsoft::UI::Dispatching::DispatcherQueue queue);
+    Windows::Foundation::IAsyncAction ImagesRepository::GetImages(hstring const& folderPath, Microsoft::UI::Dispatching::DispatcherQueue queue);
 
     winrt::event_token PropertyChanged(winrt::Microsoft::UI::Xaml::Data::PropertyChangedEventHandler const& handler)
     {

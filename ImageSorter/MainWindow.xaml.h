@@ -20,7 +20,6 @@ namespace winrt::ImageSorter::implementation
       m_repo{ ImageSorter::ImagesRepository() }
     {
       InitializeComponent();
-      m_queue = DispatcherQueue();
       SetBackground();
 
       m_closedRevoker = this->Closed(winrt::auto_revoke, [&](auto&&, auto&&)
@@ -69,11 +68,6 @@ namespace winrt::ImageSorter::implementation
     ImageSorter::ImagesRepository ImagesRepository()
     {
       return m_repo;
-    }
-
-    Microsoft::UI::Dispatching::DispatcherQueue UIQueue() const
-    {
-      return m_queue;
     }
 
     void SetBackground()
@@ -164,7 +158,6 @@ namespace winrt::ImageSorter::implementation
     }
 
   private:
-    Microsoft::UI::Dispatching::DispatcherQueue m_queue{ nullptr };
     ImageSorter::ImagesRepository m_repo{ nullptr };
     Microsoft::UI::Composition::SpringVector3NaturalMotionAnimation _springAnimation{ nullptr };
 
