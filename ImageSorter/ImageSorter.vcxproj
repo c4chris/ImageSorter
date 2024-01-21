@@ -165,6 +165,9 @@
     <Image Include="Assets\Square44x44Logo.scale-200.png" />
     <Image Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
     <Image Include="Assets\Wide310x150Logo.scale-200.png" />
+    <Image Include="Assets\StoreLogo.scale-100.png" />
+    <Image Include="Assets\SmallTile.scale-100.png" />
+    <Image Include="Assets\LargeTile.scale-100.png" />
   </ItemGroup>
   <ItemGroup>
     <None Update="LICENSE.txt">
