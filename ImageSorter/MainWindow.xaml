@@ -28,6 +28,27 @@
             <AppBarButton Icon="Edit" Label="Edit"/>
             <AppBarButton Icon="Go" Label="About" Click="AppBarButton_Click_1"/>
         </CommandBar>
+        <ContentDialog x:Name="aboutContentDialog"
+                       DefaultButton="Primary"
+                       CloseButtonText="Close">
+            <ContentDialog.TitleTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="ms-appx:///Assets/Square44x44Logo.png" Width="44" Height="44" Margin="10,0"/>
+                        <TextBlock Text="Image Sorter"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ContentDialog.TitleTemplate>
+            <TextBlock TextWrapping="WrapWholeWords">
+                <Span xml:space="preserve">
+<Run>This application can help prepare images in view of using them as training and test material for machine learning tools.</Run>
+
+<Run>The source code and documentation is available on </Run><Hyperlink NavigateUri="https://github.com/c4chris/ImageSorter">GitHub</Hyperlink><Run> which you can view in your browser.</Run>
+
+<Run>The tool needs to be able to modify the filenames of the images it displays - it will add and use siffixes in the name of the files to reflect their classification.</Run>
+                </Span>
+            </TextBlock>
+        </ContentDialog>
         <!-- The ItemsRepeater and ScrollViewer used: -->
         <ScrollViewer VerticalScrollBarVisibility="Auto" x:Name="ImageScrollViewer"
               VerticalScrollMode="Auto" Grid.Row="2">

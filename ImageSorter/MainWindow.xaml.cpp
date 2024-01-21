@@ -201,17 +201,8 @@ namespace winrt::ImageSorter::implementation
 
   IAsyncAction MainWindow::AppBarButton_Click_1(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e)
   {
-    ContentDialog dialog = ContentDialog();
-
-    // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
-    dialog.XamlRoot(sender.try_as<Button>().XamlRoot());
-    dialog.Style(Application::Current().Resources().Lookup(box_value(L"DefaultContentDialogStyle")).try_as<Style>());
-    dialog.Title(box_value(L"Image Sorter"));
-    dialog.CloseButtonText(L"Close");
-    dialog.DefaultButton(ContentDialogButton::Primary);
-    dialog.Content(box_value(L"Some interesting text"));
-
-    auto result = co_await dialog.ShowAsync();
+    aboutContentDialog().XamlRoot(sender.try_as<Button>().XamlRoot());
+    auto result = co_await aboutContentDialog().ShowAsync();
   }
 
   void MainWindow::Button_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e)
