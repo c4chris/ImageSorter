@@ -67,8 +67,9 @@ namespace winrt::ImageSorter::implementation
 
   void MainWindow::Canvas_KeyUp(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Input::KeyRoutedEventArgs const& e)
   {
-    auto canvas = sender.try_as<Canvas>();
-    auto imageInfo = canvas.DataContext().as<ImageSorter::ImageFileInfo>();
+    auto vb = sender.try_as<Viewbox>();
+    auto imageInfo = vb.DataContext().as<ImageSorter::ImageFileInfo>();
+    auto canvas = vb.Child().try_as<Canvas>();
     if (imageInfo == nullptr) return;
     if (e.Key() == Windows::System::VirtualKey::Tab)
     {
@@ -174,8 +175,8 @@ namespace winrt::ImageSorter::implementation
   void MainWindow::Window_Closed(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::WindowEventArgs const& args)
   {
     auto window = sender.try_as<Window>();
-    auto canvas = window.Content().try_as<Canvas>();
-    auto imageInfo = canvas.DataContext().as<ImageSorter::ImageFileInfo>();
+    auto vb = window.Content().try_as<Viewbox>();
+    auto imageInfo = vb.DataContext().as<ImageSorter::ImageFileInfo>();
     imageInfo.DetailWindow(nullptr);
     //Debug.WriteLine("### Set DetailWindow to null");
   }
@@ -230,6 +231,11 @@ namespace winrt::ImageSorter::implementation
         v >>= 2;
       }
     }
+    auto vb = Viewbox();
+    vb.Stretch(Media::Stretch::UniformToFill);
+    vb.StretchDirection(StretchDirection::UpOnly);
+    vb.DataContext(imageInfo);
+    vb.KeyUp({ this, &MainWindow::Canvas_KeyUp });
     // Create the binding description.
     auto b = Data::Binding();
     b.Mode(Data::BindingMode::OneWay);
@@ -238,8 +244,6 @@ namespace winrt::ImageSorter::implementation
     auto canvas = Canvas();
     canvas.Width(900);
     canvas.Height(250);
-    canvas.DataContext(imageInfo);
-    canvas.KeyUp({ this, &MainWindow::Canvas_KeyUp });
     auto image = Image();
     image.Source(Media::Imaging::BitmapImage{ Uri{ imageInfo.Path()}});
     image.SetValue(Canvas::TopProperty(), box_value(4));
@@ -289,9 +293,10 @@ namespace winrt::ImageSorter::implementation
     t2.SetValue(Canvas::LeftProperty(), box_value(830));
     t2.SetValue(Canvas::TopProperty(), box_value(45));
     canvas.Children().Append(t2);
+    vb.Child(canvas);
     auto window = Window();
     window.Title(imageInfo.Name());
-    window.Content(canvas);
+    window.Content(vb);
     Microsoft::UI::Windowing::AppWindow appWindow = window.AppWindow();
     auto size = Windows::Graphics::SizeInt32();
     size.Width = 1400;
