@@ -160,6 +160,8 @@ namespace winrt::ImageSorter::implementation
   private:
     ImageSorter::ImagesRepository m_repo{ nullptr };
     Microsoft::UI::Composition::SpringVector3NaturalMotionAnimation _springAnimation{ nullptr };
+    bool detailRectSet = false;
+    Windows::Graphics::RectInt32 detailRect = { 0 };
 
     void MainWindow::CreateOrUpdateSpringAnimation(float finalValue);
   };
