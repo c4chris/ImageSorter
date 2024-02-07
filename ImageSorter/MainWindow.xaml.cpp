@@ -175,6 +175,12 @@ namespace winrt::ImageSorter::implementation
   void MainWindow::Window_Closed(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::WindowEventArgs const& args)
   {
     auto window = sender.try_as<Window>();
+    auto pos = window.AppWindow().Position();
+    auto size = window.AppWindow().Size();
+    m_detailRect.X = pos.X;
+    m_detailRect.Y = pos.Y;
+    m_detailRect.Width = size.Width;
+    m_detailRect.Height = size.Height;
     auto vb = window.Content().try_as<Viewbox>();
     auto imageInfo = vb.DataContext().as<ImageSorter::ImageFileInfo>();
     imageInfo.DetailWindow(nullptr);
@@ -298,10 +304,16 @@ namespace winrt::ImageSorter::implementation
     window.Title(imageInfo.Name());
     window.Content(vb);
     Microsoft::UI::Windowing::AppWindow appWindow = window.AppWindow();
-    auto size = Windows::Graphics::SizeInt32();
-    size.Width = 1400;
-    size.Height = 250;
-    appWindow.Resize(size);
+    if (!m_detailRectSet)
+    {
+      auto pos = this->AppWindow().Position();
+      m_detailRect.X = pos.X;
+      m_detailRect.Y = pos.Y;
+      m_detailRect.Width = 1400;
+      m_detailRect.Height = 250;
+      m_detailRectSet = true;
+    }
+    appWindow.MoveAndResize(m_detailRect);
     window.Activate();
     window.Closed({ this, &MainWindow::Window_Closed });
     imageInfo.DetailWindow(window);
