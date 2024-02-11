@@ -27,9 +27,11 @@ namespace winrt::ImageSorter::implementation
 #ifdef _DEBUG
     OutputDebugStringA("\n\n########## - Entering get method " __FUNCTION__ "\n\n");
 #endif
+    if (m_class != -1)
+      return m_class;
     const std::regex base_regex("_[0-9a-f]{5}\\.png$");
     std::smatch base_match;
-    auto fname = to_string(m_file.Path());
+    auto fname = to_string(Path());
     if (std::regex_search(fname, base_match, base_regex))
     {
       std::ssub_match base_sub_match = base_match[0];
@@ -43,9 +45,22 @@ namespace winrt::ImageSorter::implementation
         v >>= 2;
         cnt[t] += 1;
       }
-      if (cnt[0] > 0) return 0;
-      if (cnt[3] > 0) return 3;
-      if (cnt[2] > 0) return 2;
+      if (cnt[0] > 0)
+      {
+        m_class = 0;
+        return 0;
+      }
+      if (cnt[3] > 0)
+      {
+        m_class = 3;
+        return 3;
+      }
+      if (cnt[2] > 0)
+      {
+        m_class = 2;
+        return 2;
+      }
+      m_class = 1;
       return 1;
     }
     const std::regex base_regex2("_[egm]\\.png$");
@@ -56,11 +71,18 @@ namespace winrt::ImageSorter::implementation
       char c = base[1];
       switch (c)
       {
-      case 'e': return 1;
-      case 'g': return 2;
-      case 'm': return 3;
+      case 'e':
+        m_class = 1;
+        return 1;
+      case 'g':
+        m_class = 2;
+        return 2;
+      case 'm':
+        m_class = 3;
+        return 3;
       }
     }
+    m_class = 0;
     return 0;
   }
 
@@ -113,13 +135,22 @@ namespace winrt::ImageSorter::implementation
 #ifdef _DEBUG
     OutputDebugStringA("\n\n########## - Entering get method " __FUNCTION__ "\n\n");
 #endif
+    if (!m_classColor.empty())
+      return m_classColor;
     switch (Class())
     {
-    case 1: return L"White";
-    case 2: return L"SpringGreen";
-    case 3: return L"Red";
+    case 1:
+      m_classColor = L"White";
+      return m_classColor;
+    case 2:
+      m_classColor = L"SpringGreen";
+      return m_classColor;
+    case 3:
+      m_classColor = L"Red";
+      return m_classColor;
     }
-    return L"Gold";
+    m_classColor = L"Gold";
+    return m_classColor;
   }
 
   int32_t ImageFileInfo::ClassFromDetails()
@@ -184,6 +215,10 @@ namespace winrt::ImageSorter::implementation
     OutputDebugStringA(s.c_str());
 #endif
     co_await m_file.RenameAsync(desiredName, NameCollisionOption::GenerateUniqueName);
+    m_name = L"";
+    m_path = L"";
+    m_class = -1;
+    m_classColor = L"";
     OnPropertyChanged(L"Class");
     OnPropertyChanged(L"ClassColor");
     OnPropertyChanged(L"Path");

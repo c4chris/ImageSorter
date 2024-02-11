@@ -26,12 +26,16 @@ namespace winrt::ImageSorter::implementation
 
     hstring Path()
     {
-      return m_file.Path();
+      if (m_path.empty())
+        m_path = m_file.Path();
+      return m_path;
     }
 
     hstring Name()
     {
-      return m_file.Name();
+      if (m_name.empty())
+        m_name = m_file.Name();
+      return m_name;
     }
 
     int32_t Class();
@@ -108,6 +112,10 @@ namespace winrt::ImageSorter::implementation
     int32_t m_rectIdx;
     int32_t m_detail[NbDetailImg];
     Microsoft::UI::Xaml::Window m_detailWindow{ nullptr };
+    hstring m_path = L"";
+    hstring m_name = L"";
+    int32_t m_class = -1;
+    hstring m_classColor = L"";
 
     event<Microsoft::UI::Xaml::Data::PropertyChangedEventHandler> m_propertyChanged;
     void OnPropertyChanged(hstring propertyName)
