@@ -1,0 +1,46 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+my $src = shift @ARGV;
+my $nbDetails = shift @ARGV;
+die "Cannot find source directory $src" unless defined($src) and -d $src;
+die "age : $0 <dir> nbDetails" unless defined $nbDetails;
+my %C;
+my @L = glob "$src/*/*.png";
+for my $file (@L) {
+  my ($name) = $file =~ /([^\/]+)\.png$/;
+  my ($base, $tag) = $file =~ /^(.*)_([^_.\/]+)\.png$/;
+  next unless defined $tag;
+  next if $tag eq "e";
+  next unless $tag =~ /^[0-9a-fA-F]+$/;
+  my @cnt = ( 0, 0, 0, 0 );
+  my $v = hex $tag;
+  for my $i (0 .. ($nbDetails - 1)) {
+    my $dn = $v & 3;
+    $cnt[$dn] += 1;
+    $v >>= 2;
+  }
+  my $ds = "empty";
+  $ds = "good" if $cnt[2] > 0;
+  $ds = "mixed" if $cnt[3] > 0;
+  $ds = "unk" if $cnt[0] > 0;
+  #die "$name $base $tag $cnt[0] $cnt[1] $cnt[2] $cnt[3]" if $ds eq "unk";
+  $C{$ds} += 1;
+  my $new = $base . ".png";
+  $new = $base . "_g.png" if $ds eq "good";
+  $new = $base . "_m.png" if $ds eq "mixed";
+  #print "mv $file $new\n";
+  rename $file, $new or die "Cannot rename $file to $new";
+}
+for my $class (sort keys %C) {
+  printf STDERR "%s\t%u\n", $class, $C{$class};
+}
+exit 0;
+__END__
+../../../Downloads/IMAGES_231210/03
+img0300_16a95.png
+img0301_16a55.png
+img0336_e.png
+img0337_15595.png
+
+convert img0500.png -set filename:0 "%[t]" \( +clone -roll +88+0 +clone -roll +88+0 +clone -roll +88+0 +clone -roll +88+0 +clone -roll +88+0 +clone -roll +88+0 +clone -roll +88+0 +clone -roll +96+0 \) -extent 96x96 "%[filename:0]_%d.png"
