@@ -80,7 +80,7 @@ namespace winrt::ImageSorter::implementation
     if (e.Key() == Windows::System::VirtualKey::Enter)
     {
       std::string start;
-      const std::regex base_regex("_[0-9a-f]{5}\\.png$");
+      const std::regex base_regex(ImageFileInfo::PathDetailRE);
       std::smatch base_match;
       auto fname = to_string(imageInfo.Name());
       if (std::regex_search(fname, base_match, base_regex))
@@ -89,7 +89,7 @@ namespace winrt::ImageSorter::implementation
       }
       else
       {
-        const std::regex r2("_[egm]\\.png$");
+        const std::regex r2(ImageFileInfo::PathCoarseRE);
         if (std::regex_search(fname, base_match, r2))
         {
           start = fname.substr(0, base_match.position());
@@ -99,6 +99,7 @@ namespace winrt::ImageSorter::implementation
           start = fname.substr(0, fname.length() - 4);
         }
       }
+      // this will only work up to 16 detailed images
       uint32_t v = 0;
       for (int i = 0; i < ImageFileInfo::NbDetailImg; i++)
       {
@@ -106,7 +107,7 @@ namespace winrt::ImageSorter::implementation
         v |= imageInfo.getDetail(i);
       }
       std::ostringstream o;
-      o << std::hex << std::setfill('0') << std::setw(5) << v;
+      o << std::hex << std::setfill('0') << std::setw(ImageFileInfo::PathDetailWidth) << v;
       //std::string code = std::format("_{:06x}", v);
       imageInfo.rename(to_hstring(start + "_" + o.str() + ".png"));
       imageInfo.DetailWindow().Close();
@@ -119,7 +120,7 @@ namespace winrt::ImageSorter::implementation
     {
       imageInfo.setDetail(imageInfo.RectIdx(), 1);
       canvas.Children().GetAt(imageInfo.RectIdx() + 2).try_as<Shapes::Rectangle>().Fill(ImageFileInfo::ColorBrush[1]);
-      canvas.Children().GetAt(12).try_as<Shapes::Rectangle>().Fill(ImageFileInfo::ColorBrush[imageInfo.ClassFromDetails()]);
+      canvas.Children().GetAt(ImageFileInfo::NbDetailImg + 3).try_as<Shapes::Rectangle>().Fill(ImageFileInfo::ColorBrush[imageInfo.ClassFromDetails()]);
       imageInfo.NextRect();
       e.Handled(true);
       canvas.SetLeft(canvas.Children().GetAt(1), imageInfo.RectLeft());
@@ -128,14 +129,14 @@ namespace winrt::ImageSorter::implementation
     {
       imageInfo.setDetail(imageInfo.RectIdx(), 1);
       canvas.Children().GetAt(imageInfo.RectIdx() + 2).try_as<Shapes::Rectangle>().Fill(ImageFileInfo::ColorBrush[1]);
-      canvas.Children().GetAt(12).try_as<Shapes::Rectangle>().Fill(ImageFileInfo::ColorBrush[imageInfo.ClassFromDetails()]);
+      canvas.Children().GetAt(ImageFileInfo::NbDetailImg + 3).try_as<Shapes::Rectangle>().Fill(ImageFileInfo::ColorBrush[imageInfo.ClassFromDetails()]);
       e.Handled(true);
     }
     if (e.Key() == Windows::System::VirtualKey::S)
     {
       imageInfo.setDetail(imageInfo.RectIdx(), 2);
       canvas.Children().GetAt(imageInfo.RectIdx() + 2).try_as<Shapes::Rectangle>().Fill(ImageFileInfo::ColorBrush[2]);
-      canvas.Children().GetAt(12).try_as<Shapes::Rectangle>().Fill(ImageFileInfo::ColorBrush[imageInfo.ClassFromDetails()]);
+      canvas.Children().GetAt(ImageFileInfo::NbDetailImg + 3).try_as<Shapes::Rectangle>().Fill(ImageFileInfo::ColorBrush[imageInfo.ClassFromDetails()]);
       imageInfo.NextRect();
       e.Handled(true);
       canvas.SetLeft(canvas.Children().GetAt(1), imageInfo.RectLeft());
@@ -144,14 +145,14 @@ namespace winrt::ImageSorter::implementation
     {
       imageInfo.setDetail(imageInfo.RectIdx(), 2);
       canvas.Children().GetAt(imageInfo.RectIdx() + 2).try_as<Shapes::Rectangle>().Fill(ImageFileInfo::ColorBrush[2]);
-      canvas.Children().GetAt(12).try_as<Shapes::Rectangle>().Fill(ImageFileInfo::ColorBrush[imageInfo.ClassFromDetails()]);
+      canvas.Children().GetAt(ImageFileInfo::NbDetailImg + 3).try_as<Shapes::Rectangle>().Fill(ImageFileInfo::ColorBrush[imageInfo.ClassFromDetails()]);
       e.Handled(true);
     }
     if (e.Key() == Windows::System::VirtualKey::D)
     {
       imageInfo.setDetail(imageInfo.RectIdx(), 3);
       canvas.Children().GetAt(imageInfo.RectIdx() + 2).try_as<Shapes::Rectangle>().Fill(ImageFileInfo::ColorBrush[3]);
-      canvas.Children().GetAt(12).try_as<Shapes::Rectangle>().Fill(ImageFileInfo::ColorBrush[imageInfo.ClassFromDetails()]);
+      canvas.Children().GetAt(ImageFileInfo::NbDetailImg + 3).try_as<Shapes::Rectangle>().Fill(ImageFileInfo::ColorBrush[imageInfo.ClassFromDetails()]);
       imageInfo.NextRect();
       e.Handled(true);
       canvas.SetLeft(canvas.Children().GetAt(1), imageInfo.RectLeft());
@@ -160,14 +161,14 @@ namespace winrt::ImageSorter::implementation
     {
       imageInfo.setDetail(imageInfo.RectIdx(), 3);
       canvas.Children().GetAt(imageInfo.RectIdx() + 2).try_as<Shapes::Rectangle>().Fill(ImageFileInfo::ColorBrush[3]);
-      canvas.Children().GetAt(12).try_as<Shapes::Rectangle>().Fill(ImageFileInfo::ColorBrush[imageInfo.ClassFromDetails()]);
+      canvas.Children().GetAt(ImageFileInfo::NbDetailImg + 3).try_as<Shapes::Rectangle>().Fill(ImageFileInfo::ColorBrush[imageInfo.ClassFromDetails()]);
       e.Handled(true);
     }
     if (e.Key() == Windows::System::VirtualKey::U)
     {
       imageInfo.setDetail(imageInfo.RectIdx(), 0);
       canvas.Children().GetAt(imageInfo.RectIdx() + 2).try_as<Shapes::Rectangle>().Fill(ImageFileInfo::ColorBrush[0]);
-      canvas.Children().GetAt(12).try_as<Shapes::Rectangle>().Fill(ImageFileInfo::ColorBrush[imageInfo.ClassFromDetails()]);
+      canvas.Children().GetAt(ImageFileInfo::NbDetailImg + 3).try_as<Shapes::Rectangle>().Fill(ImageFileInfo::ColorBrush[imageInfo.ClassFromDetails()]);
       e.Handled(true);
     }
   }
@@ -222,14 +223,14 @@ namespace winrt::ImageSorter::implementation
       return;
     }
     // initialize the details if we already have some info
-    const std::regex base_regex("_[0-9a-f]{5}\\.png$");
+    const std::regex base_regex(ImageFileInfo::PathDetailRE);
     std::smatch base_match;
     auto fname = to_string(imageInfo.Path());
     if (std::regex_search(fname, base_match, base_regex))
     {
       std::ssub_match base_sub_match = base_match[0];
       std::string base = base_sub_match.str();
-      std::string s = base.substr(1, 5);
+      std::string s = base.substr(1, ImageFileInfo::PathDetailWidth);
       uint32_t v = std::stoul(s, nullptr, 16);
       for (int i = 0; i < ImageFileInfo::NbDetailImg; i++)
       {
@@ -248,7 +249,7 @@ namespace winrt::ImageSorter::implementation
     PropertyPath propertyPath(L"RectLeft");
     b.Path(propertyPath);
     auto canvas = Canvas();
-    canvas.Width(900);
+    canvas.Width(ImageFileInfo::WidthFullImg + 100);
     canvas.Height(250);
     auto image = Image();
     image.Source(Media::Imaging::BitmapImage{ Uri{ imageInfo.Path()}});
@@ -258,45 +259,45 @@ namespace winrt::ImageSorter::implementation
     auto rect = Shapes::Rectangle();
     rect.Stroke(ImageFileInfo::ColorBrush[4]);
     rect.StrokeThickness(4.0);
-    rect.Width(104.0);
-    rect.Height(104.0);
-    rect.SetValue(Canvas::TopProperty(), box_value(0));
+    rect.Width(ImageFileInfo::SizeDetailImg + 8);
+    rect.Height(ImageFileInfo::SizeDetailImg + 8);
+    rect.SetValue(Canvas::TopProperty(), box_value(ImageFileInfo::TopSkipDetailImg));
     rect.SetBinding(Canvas::LeftProperty(), b);
     canvas.Children().Append(rect);
     for (int i = 0; i < ImageFileInfo::NbDetailImg; i++)
     {
       auto r = Shapes::Rectangle();
       r.Fill(ImageFileInfo::ColorBrush[imageInfo.getDetail(i)]);
-      r.Width(88.0);
+      r.Width(ImageFileInfo::SizeDetailImg - ImageFileInfo::HOvlDetailImg);
       r.Height(12.0);
-      r.SetValue(Canvas::LeftProperty(), box_value(i * 88 + 4));
-      r.SetValue(Canvas::TopProperty(), box_value(108));
+      r.SetValue(Canvas::LeftProperty(), box_value(i * (ImageFileInfo::SizeDetailImg - ImageFileInfo::HOvlDetailImg) + 4));
+      r.SetValue(Canvas::TopProperty(), box_value(ImageFileInfo::HeightFullImg + 12));
       canvas.Children().Append(r);
     }
     auto r1 = Shapes::Rectangle();
     r1.Fill(ImageFileInfo::ColorBrush[imageInfo.Class()]);
     r1.Width(12.0);
     r1.Height(12.0);
-    r1.SetValue(Canvas::LeftProperty(), box_value(812));
+    r1.SetValue(Canvas::LeftProperty(), box_value(ImageFileInfo::WidthFullImg + 12));
     r1.SetValue(Canvas::TopProperty(), box_value(30));
     canvas.Children().Append(r1);
     auto r2 = Shapes::Rectangle();
     r2.Fill(ImageFileInfo::ColorBrush[imageInfo.ClassFromDetails()]);
     r2.Width(12.0);
     r2.Height(12.0);
-    r2.SetValue(Canvas::LeftProperty(), box_value(812));
+    r2.SetValue(Canvas::LeftProperty(), box_value(ImageFileInfo::WidthFullImg + 12));
     r2.SetValue(Canvas::TopProperty(), box_value(50));
     canvas.Children().Append(r2);
     auto t1 = TextBlock();
     t1.Text(L"Orig value");
     t1.Width(70.0);
-    t1.SetValue(Canvas::LeftProperty(), box_value(830));
+    t1.SetValue(Canvas::LeftProperty(), box_value(ImageFileInfo::WidthFullImg + 30));
     t1.SetValue(Canvas::TopProperty(), box_value(25));
     canvas.Children().Append(t1);
     auto t2 = TextBlock();
     t2.Text(L"New value");
     t2.Width(70.0);
-    t2.SetValue(Canvas::LeftProperty(), box_value(830));
+    t2.SetValue(Canvas::LeftProperty(), box_value(ImageFileInfo::WidthFullImg + 30));
     t2.SetValue(Canvas::TopProperty(), box_value(45));
     canvas.Children().Append(t2);
     vb.Child(canvas);

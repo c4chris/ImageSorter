@@ -21,6 +21,9 @@ namespace winrt
 namespace winrt::ImageSorter::implementation
 {
   Media::Brush ImageFileInfo::ColorBrush[5] = { nullptr, nullptr, nullptr, nullptr, nullptr };
+  // The 5 below must be the same as PathDetailWidth
+  const char ImageFileInfo::PathDetailRE[] = "_[0-9a-f]{5}\\.png$";
+  const char ImageFileInfo::PathCoarseRE[] = "_[egm]\\.png$";
 
   int32_t ImageFileInfo::Class()
   {
@@ -29,14 +32,14 @@ namespace winrt::ImageSorter::implementation
 #endif
     if (m_class != -1)
       return m_class;
-    const std::regex base_regex("_[0-9a-f]{5}\\.png$");
+    const std::regex base_regex(PathDetailRE);
     std::smatch base_match;
     auto fname = to_string(Path());
     if (std::regex_search(fname, base_match, base_regex))
     {
       std::ssub_match base_sub_match = base_match[0];
       std::string base = base_sub_match.str();
-      std::string s = base.substr(1, 5);
+      std::string s = base.substr(1, PathDetailWidth);
       uint32_t v = std::stoul(s, nullptr, 16);
       int cnt[4] = { 0 };
       for (int i = 0; i < NbDetailImg; i++)
@@ -63,7 +66,7 @@ namespace winrt::ImageSorter::implementation
       m_class = 1;
       return 1;
     }
-    const std::regex base_regex2("_[egm]\\.png$");
+    const std::regex base_regex2(PathCoarseRE);
     if (std::regex_search(fname, base_match, base_regex2))
     {
       std::ssub_match base_sub_match = base_match[0];
@@ -93,7 +96,7 @@ namespace winrt::ImageSorter::implementation
 #endif
     if (value < 0 || value > 3) return;
     if (value == Class()) return;
-    if (m_file.Name().size() <= 10) return;
+    if (m_file.Name().size() <= (PathDetailWidth + 5)) return;
     auto sName = to_string(m_file.Name());
     auto end = sName.substr(sName.length() - 6);
     std::string start;
@@ -103,10 +106,10 @@ namespace winrt::ImageSorter::implementation
     }
     else
     {
-      end = sName.substr(sName.length() - 10);
+      end = sName.substr(sName.length() - (PathDetailWidth + 5));
       if (end[0] == '_')
       {
-        start = sName.substr(0, sName.length() - 10);
+        start = sName.substr(0, sName.length() - (PathDetailWidth + 5));
       }
       else
       {
@@ -191,7 +194,7 @@ namespace winrt::ImageSorter::implementation
 #ifdef _DEBUG
     OutputDebugStringA("\n\n########## - Entering get method " __FUNCTION__ "\n\n");
 #endif
-    return m_rectIdx * 88;
+    return m_rectIdx * (SizeDetailImg - HOvlDetailImg);
   }
 
   void ImageFileInfo::NextRect()

@@ -105,6 +105,13 @@ namespace winrt::ImageSorter::implementation
     Windows::Foundation::IAsyncAction rename(hstring desiredName);
 
     static const uint32_t NbDetailImg = 9;
+    static const uint32_t WidthFullImg = 800;
+    static const uint32_t HeightFullImg = 96;
+    static const uint32_t TopSkipDetailImg = 0;
+    static const uint32_t SizeDetailImg = 96;
+    static const uint32_t HOvlDetailImg = 8;
+    static const char PathDetailRE[], PathCoarseRE[];
+    static const int PathDetailWidth = 5;
     static Microsoft::UI::Xaml::Media::Brush ColorBrush[5];
 
   private:
