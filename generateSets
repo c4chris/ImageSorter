@@ -10,18 +10,30 @@ mkdir "$dst/good";
 mkdir "$dst/mixed";
 my %C;
 my @L = glob "$src/*/*.png";
+# For detail image size of 96 with 18 overlap - 1 less than number of images
+my $lidx = 9;
+## For detail image size of 96 with 8 overlap - 1 less than number of images
+#my $lidx = 8;
+## For detail image size of 64 - 1 less than number of images
+#my $lidx = 11;
 for my $file (@L) {
   my ($name) = $file =~ /([^\/]+)\.png$/;
   my ($tag) = $file =~ /_([^_.\/]+)\.png$/;
   next unless defined $tag;
+  next if $tag eq "g" or  $tag eq "m";
   print STDERR "Processing $name\n";
-  system "convert $file -set filename:0 \"%[t]\" \\( +clone -roll +88+0 +clone -roll +88+0 +clone -roll +88+0 +clone -roll +88+0 +clone -roll +88+0 +clone -roll +88+0 +clone -roll +88+0 +clone -roll +96+0 \\) -extent 96x96 \"%[filename:0]_%d.png\"";
+  # This is for 96 with 18 overlap
+  system "convert $file -set filename:0 \"%[t]\" \\( +clone -roll +78+0 +clone -roll +78+0 +clone -roll +78+0 +clone -roll +78+0 +clone -roll +78+0 +clone -roll +78+0 +clone -roll +78+0 +clone -roll +78+0 +clone -roll +98+0 \\) -extent 96x96 \"%[filename:0]_%d.png\"";
+  ## This is for 96 with 8 overlap
+  #system "convert $file -set filename:0 \"%[t]\" \\( +clone -roll +88+0 +clone -roll +88+0 +clone -roll +88+0 +clone -roll +88+0 +clone -roll +88+0 +clone -roll +88+0 +clone -roll +88+0 +clone -roll +96+0 \\) -extent 96x96 \"%[filename:0]_%d.png\"";
+  ## This is for 64, skipping first 16 rows of pixels
+  #system "convert $file -set filename:0 \"%[t]\" -roll +0+80 \\( +clone -roll +64+0 +clone -roll +64+0 +clone -roll +64+0 +clone -roll +64+0 +clone -roll +64+0 +clone -roll +64+0 +clone -roll +64+0 +clone -roll +64+0 +clone -roll +64+0 +clone -roll +64+0 +clone -roll +96+0 \\) -extent 64x64 \"%[filename:0]_%d.png\"";
   my @D;
   if ($tag eq "e") {
-    push @D, ("empty") x 9;
+    push @D, ("empty") x ($lidx + 1);
   } else {
     my $v = hex $tag;
-    for my $i (0 .. 8) {
+    for my $i (0 .. $lidx) {
       my $dn = $v & 3;
       my $ds = "unk";
       $ds = "empty" if $dn == 1;
@@ -31,7 +43,7 @@ for my $file (@L) {
       $v >>= 2;
     }
   }
-  for my $i (0 .. 8) {
+  for my $i (0 .. $lidx) {
     $C{$D[$i]} += 1;
     if ($D[$i] eq "unk") {
       unlink "${name}_$i.png";

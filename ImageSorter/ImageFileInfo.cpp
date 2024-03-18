@@ -21,8 +21,15 @@ namespace winrt
 namespace winrt::ImageSorter::implementation
 {
   Media::Brush ImageFileInfo::ColorBrush[5] = { nullptr, nullptr, nullptr, nullptr, nullptr };
+#if DETAIL_IMG_SIZE == 96
   // The 5 below must be the same as PathDetailWidth
   const char ImageFileInfo::PathDetailRE[] = "_[0-9a-f]{5}\\.png$";
+#elif DETAIL_IMG_SIZE == 64
+  // The 6 below must be the same as PathDetailWidth
+  const char ImageFileInfo::PathDetailRE[] = "_[0-9a-f]{6}\\.png$";
+#else
+#error "DETAIL_IMG_SIZE has an unsupported value"
+#endif
   const char ImageFileInfo::PathCoarseRE[] = "_[egm]\\.png$";
 
   int32_t ImageFileInfo::Class()

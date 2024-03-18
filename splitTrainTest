@@ -1,0 +1,9 @@
+#!/usr/bin/python3
+import numpy as np
+from sklearn.model_selection import train_test_split
+types = ["empty", "good", "mixed"]
+for t in types:
+  lines = open(t + '_list.txt').readlines()
+  l1, l2 = train_test_split(lines, test_size=0.2)
+  open(t + '_train_list.txt', 'w').writelines(l1)
+  open(t + '_test_list.txt', 'w').writelines(l2)

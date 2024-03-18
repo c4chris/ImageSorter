@@ -3,6 +3,10 @@
 #include "ImageFileInfo.g.h"
 #include "ImagesRepository.g.h"
 
+// Select the size of the detail image
+// Valid values at the moment are 96 and 64
+#define DETAIL_IMG_SIZE 96
+
 namespace winrt::ImageSorter::implementation
 {
   struct ImageFileInfo : ImageFileInfoT<ImageFileInfo>
@@ -104,14 +108,34 @@ namespace winrt::ImageSorter::implementation
 
     Windows::Foundation::IAsyncAction rename(hstring desiredName);
 
-    static const uint32_t NbDetailImg = 9;
-    static const uint32_t WidthFullImg = 800;
-    static const uint32_t HeightFullImg = 96;
+#if DETAIL_IMG_SIZE == 96
+    //   0 -  96
+    //  78 - 174
+    // 156 - 252
+    // 234 - 330
+    // 312 - 408
+    // 390 - 486
+    // 468 - 564
+    // 546 - 642
+    // 624 - 720
+    // 702 - 798
+    static const uint32_t NbDetailImg = 10;
     static const uint32_t TopSkipDetailImg = 0;
     static const uint32_t SizeDetailImg = 96;
-    static const uint32_t HOvlDetailImg = 8;
-    static const char PathDetailRE[], PathCoarseRE[];
+    static const uint32_t HOvlDetailImg = 18;
     static const int PathDetailWidth = 5;
+#elif DETAIL_IMG_SIZE == 64
+    static const uint32_t NbDetailImg = 12;
+    static const uint32_t TopSkipDetailImg = 16;
+    static const uint32_t SizeDetailImg = 64;
+    static const uint32_t HOvlDetailImg = 0;
+    static const int PathDetailWidth = 6;
+#else
+#error "DETAIL_IMG_SIZE has an unsupported value"
+#endif
+    static const uint32_t WidthFullImg = 800;
+    static const uint32_t HeightFullImg = 96;
+    static const char PathDetailRE[], PathCoarseRE[];
     static Microsoft::UI::Xaml::Media::Brush ColorBrush[5];
 
   private:
